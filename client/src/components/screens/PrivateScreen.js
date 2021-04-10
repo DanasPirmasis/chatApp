@@ -9,11 +9,14 @@ const PrivateScreen = ({ history }) => {
 	const [privateData, setPrivateData] = useState('');
 	const [modalOpen, setModalOpen] = useState(false);
 	const [chatIDS, setChatIDS] = useState('');
+	const [inputUsername, setInputUsername] = useState('');
+	const [outputUsernames, setOutputUsernames] = useState('');
 
 	useEffect(() => {
 		if (!localStorage.getItem('authToken')) {
 			history.push('/login');
 		}
+
 		const fetchPrivateData = async () => {
 			const config = {
 				headers: {
@@ -35,6 +38,33 @@ const PrivateScreen = ({ history }) => {
 		fetchPrivateData();
 	}, [history]);
 
+	const userSearchHandler = async (e) => {
+		e.preventDefault();
+
+		const config = {
+			header: {
+				'Content-Type': 'application/json',
+			},
+		};
+
+		try {
+			const { data } = await axios.post(
+				'/api/private/searchusers',
+				{ inputUsername },
+				config
+			);
+
+			setOutputUsernames(data.data[0].username);
+			console.log(data.data[0].username);
+			console.log({ outputUsernames });
+
+			history.push('/searchusers');
+		} catch (error) {
+			setError(error.response.data.error);
+			localStorage.removeItem('authToken');
+		}
+	};
+
 	const logoutHandler = () => {
 		localStorage.removeItem('authToken');
 		history.push('/login');
@@ -52,8 +82,14 @@ const PrivateScreen = ({ history }) => {
 			<button onClick={() => setModalOpen(true)}>Open new message</button>
 			<Modal isOpen={modalOpen} onRequestClose={() => setModalOpen(false)}>
 				<h2>Find New Message</h2>
-				<input />
-				<button>New Message</button>
+				<form onSubmit={userSearchHandler}>
+					<input
+						placeholder="Search users"
+						value={inputUsername}
+						onChange={(e) => setInputUsername(e.target.value)}
+					/>
+					<button type="submit">New Message</button>
+				</form>
 				<button onClick={() => setModalOpen(false)}>Close</button>
 			</Modal>
 		</>
