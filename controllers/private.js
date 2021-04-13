@@ -17,7 +17,7 @@ exports.getUsers = async (req, res, next) => {
 	}
 
 	try {
-		const user = await User.find({ username: inputUsername });
+		const user = await User.find({ username: { $regex: inputUsername } });
 
 		if (!user) {
 			return next(new ErrorResponse('No user found', 401));
