@@ -6,7 +6,10 @@ const ErrorResponse = require('../utils/errorResponse');
 exports.getPrivateData = (req, res, next) => {
 	res.status(200).json({
 		success: true,
-		data: req.user.conversationIDS,
+		data: {
+			username: req.user.username,
+			conversationIDS: req.user.conversationIDS,
+		},
 	});
 };
 
