@@ -1,10 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const { getPrivateData } = require('../controllers/private');
 const { protect } = require('../middleware/auth');
-const { getUsers } = require('../controllers/private');
+const {
+	getPrivateData,
+	getUsers,
+	newConversation,
+	getMessages,
+	postMessage,
+} = require('../controllers/private');
 
 router.route('/').get(protect, getPrivateData);
-router.route('/searchusers').post(getUsers);
+router.route('/searchusers').post(protect, getUsers);
+router.route('/newconversation').post(protect, newConversation);
+router.route('/getmessages').post(protect, getMessages);
+router.route('/postmessage').post(protect, postMessage);
 
 module.exports = router;
