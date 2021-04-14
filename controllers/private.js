@@ -1,17 +1,18 @@
 const User = require('../models/User');
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
+const ErrorResponse = require('../utils/errorResponse');
 
 exports.getPrivateData = (req, res, next) => {
 	res.status(200).json({
 		success: true,
-		conversationIDS: req.user.conversationIDS,
+		data: req.user.conversationIDS,
 	});
 };
 
 exports.getUsers = async (req, res, next) => {
 	const inputUsername = req.body.inputUsername;
-
+	console.log(req.body);
 	if (!inputUsername) {
 		return next(new ErrorResponse('Please enter a username', 400));
 	}
@@ -23,11 +24,12 @@ exports.getUsers = async (req, res, next) => {
 			return next(new ErrorResponse('No user found', 401));
 		}
 
-		console.log(user);
+		let usernamesList = user.map((a) => a.username);
+		//console.log(usernamesList);
 
 		res.status(200).json({
 			success: true,
-			data: user.username,
+			data: usernamesList,
 		});
 	} catch (error) {
 		res.status(500).json({ success: false, error: error.message });

@@ -22,7 +22,11 @@ const server = app.listen(PORT, () =>
 	console.log(`Server running on port ${PORT}`)
 );
 
-const io = socketIO(server);
+const io = socketIO(server).on('connection', (socket) => {
+	socket.on('message', function (message) {
+		io.emit('message', { message });
+	});
+});
 
 process.on('unhandledRejection', (err, promise) => {
 	console.log(`Logged error: ${err}`);

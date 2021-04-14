@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
-import {Button, FormControl, InputLabel, Input } from '@material-ui/core';
+import { Button, FormControl, InputLabel, Input } from '@material-ui/core';
 import Message from './Message';
 
 Modal.setAppElement('#root');
@@ -15,13 +15,13 @@ const PrivateScreen = ({ history }) => {
 	const [outputUsernames, setOutputUsernames] = useState('');
 	const [input, setInput] = useState('');
 	const [messages, setMessages] = useState([
-		{username:'ustinas' , text:'labas'},
-		{username:'Danas' , text:'sveikutis'}
+		{ username: 'ustinas', text: 'labas' },
+		{ username: 'Danas', text: 'sveikutis' },
 	]);
 	const [username, setUsername] = useState('');
 
 	useEffect(() => {
-		setUsername(prompt('Please enter username'));
+		//setUsername(prompt('Please enter username'));
 		if (!localStorage.getItem('authToken')) {
 			history.push('/login');
 		}
@@ -56,32 +56,30 @@ const PrivateScreen = ({ history }) => {
 				Authorization: `Bearer ${localStorage.getItem('authToken')}`,
 			},
 		};
-
+		console.log(config);
 		try {
-			const { data } = await axios.post(
-				'/api/private/searchusers',
-				{ inputUsername },
-				config
-			);
-
-			setOutputUsernames(data.data[0].username);
-			console.log(data.data[0].username);
+			const { data } = await axios({
+				method: 'post',
+				url: '/api/private/searchusers',
+				data: { inputUsername },
+				headers: config.header,
+			});
+			console.log(data);
+			setOutputUsernames(data.data[0]);
+			console.log(data.data[0]);
 
 			history.push('/searchusers');
 		} catch (error) {
-			setError(error.response.data.error);
-			localStorage.removeItem('authToken');
+			console.log(error);
+			//setError(error.response.data.error);
 		}
 	};
 
-	console.log(input);
-	console.log(messages);
-
-	const sendMessage =(event) =>{
+	const sendMessage = (event) => {
 		event.preventDefault();
-		setMessages([...messages, {username:username, text:input}]);
+		setMessages([...messages, { username: username, text: input }]);
 		setInput('');
-	}
+	};
 
 	const logoutHandler = () => {
 		localStorage.removeItem('authToken');
@@ -94,20 +92,31 @@ const PrivateScreen = ({ history }) => {
 		<>
 			<div style={{ background: 'green', color: 'white' }}>{privateData}</div>
 			<div>{chatIDS}</div>
-			<button  onClick={logoutHandler}>Logout</button>
+			<button onClick={logoutHandler}>Logout</button>
 			<br />
 			<h2> Welcome {username}</h2>
 
 			<form>
-			<FormControl>
-				<InputLabel >Enter a message</InputLabel>
-				<Input value={input} onChange={event => setInput(event.target.value)}/>
-				<Button type='submit' disabled ={!input} variant="contained" color="primary" onClick={sendMessage}>Send Message</Button>
-			</FormControl>
+				<FormControl>
+					<InputLabel>Enter a message</InputLabel>
+					<Input
+						value={input}
+						onChange={(event) => setInput(event.target.value)}
+					/>
+					<Button
+						type="submit"
+						disabled={!input}
+						variant="contained"
+						color="primary"
+						onClick={sendMessage}
+					>
+						Send Message
+					</Button>
+				</FormControl>
 			</form>
 
 			<br />
-			{messages.map(message => (
+			{messages.map((message) => (
 				<Message username={message.username} text={message.text} />
 			))}
 
@@ -122,7 +131,7 @@ const PrivateScreen = ({ history }) => {
 						onChange={(e) => setInputUsername(e.target.value)}
 					/>
 					<button type="submit">New Message</button>
-				</form>	
+				</form>
 
 				<button onClick={() => setModalOpen(false)}>Close</button>
 			</Modal>
