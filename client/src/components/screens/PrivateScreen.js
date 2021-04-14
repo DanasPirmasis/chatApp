@@ -34,7 +34,7 @@ const PrivateScreen = ({ history }) => {
 				setError('You are not authorized please login');
 			}
 		};
-
+		console.log(localStorage);
 		fetchPrivateData();
 	}, [history]);
 
@@ -44,6 +44,7 @@ const PrivateScreen = ({ history }) => {
 		const config = {
 			header: {
 				'Content-Type': 'application/json',
+				Authorization: `Bearer ${localStorage.getItem('authToken')}`,
 			},
 		};
 
@@ -56,7 +57,6 @@ const PrivateScreen = ({ history }) => {
 
 			setOutputUsernames(data.data[0].username);
 			console.log(data.data[0].username);
-			console.log({ outputUsernames });
 
 			history.push('/searchusers');
 		} catch (error) {

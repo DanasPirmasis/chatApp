@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Schema = mongoose.Schema;
 
 const UserSchema = new mongoose.Schema({
 	username: {
@@ -28,7 +29,10 @@ const UserSchema = new mongoose.Schema({
 	},
 	resetPasswordToken: String,
 	resetPaswordExpire: Date,
-	chatID: [String],
+	conversationIDS: {
+		type: Schema.Types.ObjectId,
+		ref: 'Conversations',
+	},
 });
 
 UserSchema.pre('save', async function (next) {
