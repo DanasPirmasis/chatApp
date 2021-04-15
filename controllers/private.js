@@ -41,6 +41,11 @@ exports.getUsers = async (req, res, next) => {
 
 exports.newConversation = async (req, res, next) => {
 	const recipients = req.body.recipients;
+
+	if (!recipients) {
+		res.status(500).json({ success: false, error: error.message });
+	}
+	console.log(recipients);
 	// creatorID receiverID
 	try {
 		let result = await Conversation.findOne({ recipients: recipients });
@@ -49,10 +54,13 @@ exports.newConversation = async (req, res, next) => {
 			const conversation = await Conversation.create({
 				recipients,
 			});
-			//Add for all users instead of only one
-			await User.findByIdAndUpdate(recipients[0], {
-				conversationIDS: conversation._id,
+
+			await recipients.forEach((recipient) => {
+				User.findByIdAndUpdate(recipient, {
+					conversationIDS: conversation._id,
+				});
 			});
+
 			//pridet useriu usernamus
 			res.status(200).json({
 				success: true,
@@ -85,14 +93,46 @@ exports.getMessages = async (req, res, next) => {
 		res.status(500).json({ success: false, error: error.message });
 	}
 };
+
 exports.postMessage = async (req, res, next) => {
 	const { conversationID, from, body } = req.body;
 
 	try {
-		await Conversation.create({
-			conversationID,
-			from,
-			body,
+		const message = await Message.create({
+			conversation: conversationID,
+			from: from,
+			body: body,
+		});
+		res.status(200).json({
+			success: true,
+			data: message._id,
+		});
+	} catch (error) {
+		res.status(500).json({ success: false, error: error.message });
+	}
+};
+
+exports.getConversationRecipientUsernames = async (req, res, next) => {
+	const conversationID = req.body.conversationID;
+
+	try {
+		if (!conversationID) {
+			res.status(500).json({ success: false, error: error.message });
+		}
+		const conversation = await Conversation.findById(conversationID);
+
+		let recipientUsernames = [];
+
+		console.log(conversation.recipients.length);
+		for (const id of conversation.recipients) {
+			let user = await User.findById(id);
+			let username = user.username;
+			recipientUsernames.push(username);
+		}
+
+		res.status(200).json({
+			success: true,
+			data: recipientUsernames,
 		});
 	} catch (error) {
 		res.status(500).json({ success: false, error: error.message });
