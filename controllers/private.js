@@ -9,6 +9,7 @@ exports.getPrivateData = (req, res, next) => {
 		data: {
 			username: req.user.username,
 			conversationIDS: req.user.conversationIDS,
+			_id: req.user._id
 		},
 	});
 };

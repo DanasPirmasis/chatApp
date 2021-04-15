@@ -1,27 +1,23 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Modal from 'react-modal';
-import { Button, FormControl, InputLabel, Input } from '@material-ui/core';
-import Message from './Message';
+import Sidebar from './Sidebar';
+import Chat from './Chat'
+import "./PrivateScreen.css"
 
-Modal.setAppElement('#root');
+
 
 const PrivateScreen = ({ history }) => {
 	const [error, setError] = useState('');
 	const [privateData, setPrivateData] = useState('');
-	const [modalOpen, setModalOpen] = useState(false);
-	const [chatIDS, setChatIDS] = useState('');
+	const [conversationID, setConversationID] = useState('');
 	const [inputUsername, setInputUsername] = useState('');
 	const [outputUsernames, setOutputUsernames] = useState('');
 	const [input, setInput] = useState('');
-	const [messages, setMessages] = useState([
-		{ username: 'ustinas', text: 'labas' },
-		{ username: 'Danas', text: 'sveikutis' },
-	]);
+	const [messages, setMessages] = useState([]);
 	const [username, setUsername] = useState('');
+	const [userID, setUserID] = useState('');
 
 	useEffect(() => {
-		//setUsername(prompt('Please enter username'));
 		if (!localStorage.getItem('authToken')) {
 			history.push('/login');
 		}
@@ -36,15 +32,20 @@ const PrivateScreen = ({ history }) => {
 
 			try {
 				const { data } = await axios.get('/api/private', config);
-				console.log(data);
-				//setPrivateData(data.data);
-				//setChatIDS(data.chatIDS);
+				//console.log(data);
+				setUsername(data.data.username);
+				setConversationID(data.data.conversationIDS);
+				setUserID(data.data._id);
+				//console.log(data.data.conversationIDS);
 			} catch (error) {
 				localStorage.removeItem('authToken');
 				setError('You are not authorized please login');
 			}
 		};
-		console.log(localStorage);
+
+
+		
+		//console.log(localStorage);
 		fetchPrivateData();
 	}, [history]);
 
@@ -69,16 +70,80 @@ const PrivateScreen = ({ history }) => {
 			setOutputUsernames(data.data[0]);
 			console.log(data.data[0]);
 
-			history.push('/searchusers');
+			//history.push('/searchusers');
 		} catch (error) {
 			console.log(error);
 			//setError(error.response.data.error);
 		}
 	};
 
+
+
+	const getMessagesHandler = async () => {
+
+
+		const config = {
+			header: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+			},
+		};
+		try {
+			const { data } = await axios({
+				method: 'post',
+				url: '/api/private/getmessages',
+				data: { conversationID },
+				headers: config.header,
+			});
+
+			data.data.forEach(mess => (
+				(userID != mess.from ? setMessages([...messages, { username: 'Danas', text: mess.body }]): setMessages([...messages, { username: 'ustinas', text: mess.body }]))
+				//console.log(mess)
+			))
+
+
+			//history.push('/searchusers');
+		} catch (error) {
+			console.log(error);
+			//setError(error.response.data.error);
+		}
+	};
+
+
+
+
+	const sendMessagesHandler = async () => {
+
+		const config = {
+			header: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+			},
+		};
+		try {
+			console.log(conversationID)
+			const { data } = await axios({
+				method: 'post',
+				url: '/api/private/postmessage',
+				data: { conversationID, from:userID, body:input},
+				headers: config.header,
+			});
+			console.log(data);
+
+			//history.push('/searchusers');
+		} catch (error) {
+			console.log(error);
+			//setError(error.response.data.error);
+		}
+	};
+	
+	console.log(input)
+
 	const sendMessage = (event) => {
 		event.preventDefault();
-		setMessages([...messages, { username: username, text: input }]);
+		//setMessages([...messages, { username: username, text: input }]);
+		sendMessagesHandler();
+		getMessagesHandler()
 		setInput('');
 	};
 
@@ -91,51 +156,35 @@ const PrivateScreen = ({ history }) => {
 		<span className="error-message">{error}</span>
 	) : (
 		<>
-			<div style={{ background: 'green', color: 'white' }}>{privateData}</div>
-			<div>{chatIDS}</div>
-			<button onClick={logoutHandler}>Logout</button>
-			<br />
-			<h2> Welcome {username}</h2>
+			<div className="chatApp">
+				<div className="chatApp__top">
 
-			<form>
-				<FormControl>
-					<InputLabel>Enter a message</InputLabel>
-					<Input
-						value={input}
-						onChange={(event) => setInput(event.target.value)}
-					/>
-					<Button
-						type="submit"
-						disabled={!input}
-						variant="contained"
-						color="primary"
-						onClick={sendMessage}
-					>
-						Send Message
-					</Button>
-				</FormControl>
-			</form>
+					<h2> Welcome {username}</h2>
+					<button onClick={logoutHandler}>Logout</button>
 
-			<br />
-			{messages.map((message) => (
-				<Message username={message.username} text={message.text} />
-			))}
+				</div>
 
-			<br />
-			<button onClick={() => setModalOpen(true)}>Open new message</button>
-			<Modal isOpen={modalOpen} onRequestClose={() => setModalOpen(false)}>
-				<h2>Find New Message</h2>
-				<form onSubmit={userSearchHandler}>
-					<input
-						placeholder="Search users"
-						value={inputUsername}
-						onChange={(e) => setInputUsername(e.target.value)}
-					/>
-					<button type="submit">New Message</button>
-				</form>
+				
+					<div className="chatApp__body">
+							<Sidebar
+							 userSearchHandler={userSearchHandler}
+							  inputUsername ={inputUsername} 
+							  setInputUsername={setInputUsername} 
+							  outputUsernames={outputUsernames}
+							  />
+							  
 
-				<button onClick={() => setModalOpen(false)}>Close</button>
-			</Modal>
+							<Chat 
+							input={input} 
+							setInput={setInput}
+							sendMessage={sendMessage}
+							messages={messages}
+							username={username}
+							/>
+
+
+					</div>
+			</div>
 		</>
 	);
 };

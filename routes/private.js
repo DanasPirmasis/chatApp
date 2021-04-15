@@ -13,8 +13,8 @@ const {
 router.route('/').get(protect, getPrivateData);
 router.route('/searchusers').post(protect, getUsers);
 router.route('/newconversation').post(protect, newConversation);
-router.route('/getmessages').post(protect, getMessages);
-router.route('/postmessage').post(protect, postMessage);
+router.route('/getmessages').post( getMessages);
+router.route('/postmessage').post( postMessage);
 router.route('/getusernames').post(protect, getConversationRecipientUsernames);
 
 module.exports = router;
