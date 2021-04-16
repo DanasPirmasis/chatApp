@@ -158,32 +158,26 @@ const PrivateScreen = ({ history }) => {
 		<>
 			<div className="chatApp">
 				<div className="chatApp__top">
-
 					<h2> Welcome {username}</h2>
 					<button onClick={logoutHandler}>Logout</button>
-
 				</div>
 
-				
-					<div className="chatApp__body">
-							<Sidebar
-							 userSearchHandler={userSearchHandler}
-							  inputUsername ={inputUsername} 
-							  setInputUsername={setInputUsername} 
-							  outputUsernames={outputUsernames}
-							  />
-							  
+				<div className="chatApp__body">
+					<Sidebar
+						userSearchHandler={userSearchHandler}
+						inputUsername={inputUsername}
+						setInputUsername={setInputUsername}
+						outputUsernames={outputUsernames}
+					/>
 
-							<Chat 
-							input={input} 
-							setInput={setInput}
-							sendMessage={sendMessage}
-							messages={messages}
-							username={username}
-							/>
-
-
-					</div>
+					<Chat
+						input={input}
+						setInput={setInput}
+						sendMessage={sendMessage}
+						messages={messages}
+						username={username}
+					/>
+				</div>
 			</div>
 		</>
 	);
