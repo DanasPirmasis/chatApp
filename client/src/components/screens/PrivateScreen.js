@@ -43,7 +43,7 @@ const PrivateScreen = ({ history }) => {
 			}
 		};
 
-
+		
 		
 		//console.log(localStorage);
 		fetchPrivateData();
@@ -78,10 +78,42 @@ const PrivateScreen = ({ history }) => {
 	};
 
 
+	const fetchMessages = async (e) => {
+		e.preventDefault();
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+			},
+		};
+
+		try {
+			const { data } = await axios({
+				method: 'post',
+				url: '/api/private/getmessages',
+				data: { conversationID },
+				headers: config.header,
+			});
+
+
+			data.data.forEach(mess => (
+				userID != mess.from ? setMessages(messages => [...messages,{ username: 'Danas', text: mess.body }]): setMessages(messages => [...messages, { username: 'ustinas', text: mess.body }])
+			));
+
+
+			//history.push('/searchusers');
+		} catch (error) {
+			console.log(error);
+			//setError(error.response.data.error);
+		}
+	};
+
+
+
+
+
 
 	const getMessagesHandler = async () => {
-
-
 		const config = {
 			header: {
 				'Content-Type': 'application/json',
@@ -97,9 +129,10 @@ const PrivateScreen = ({ history }) => {
 			});
 
 			data.data.forEach(mess => (
-				(userID != mess.from ? setMessages([...messages, { username: 'Danas', text: mess.body }]): setMessages([...messages, { username: 'ustinas', text: mess.body }]))
+				userID != mess.from ? setMessages([...messages, { username: 'Danas', text: mess.body }]): setMessages([...messages, { username: 'ustinas', text: mess.body }])
+				//userID != mess.from ? setMessages([...messages, { username: 'Danas', text: mess.body }]): setMessages([...messages, { username: 'ustinas', text: mess.body }])
 				//console.log(mess)
-			))
+			));
 
 
 			//history.push('/searchusers');
@@ -137,19 +170,22 @@ const PrivateScreen = ({ history }) => {
 		}
 	};
 	
-	console.log(input)
 
 	const sendMessage = (event) => {
 		event.preventDefault();
 		//setMessages([...messages, { username: username, text: input }]);
 		sendMessagesHandler();
-		getMessagesHandler()
+		getMessagesHandler();
 		setInput('');
 	};
 
 	const logoutHandler = () => {
 		localStorage.removeItem('authToken');
 		history.push('/login');
+		setUsername('');
+		setUserID('');
+		console.log(username);
+		console.log(userID);
 	};
 
 	return error ? (
@@ -160,6 +196,7 @@ const PrivateScreen = ({ history }) => {
 				<div className="chatApp__top">
 					<h2> Welcome {username}</h2>
 					<button onClick={logoutHandler}>Logout</button>
+					<button onClick={fetchMessages}>Refresh</button>
 				</div>
 
 				<div className="chatApp__body">

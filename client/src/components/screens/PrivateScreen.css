@@ -6,7 +6,7 @@
 .chatApp__body{
     display: flex;
     background-color: white;
-    height: 90vh;
+    height: 500px;
     width: 90vw;
     box-shadow: -1px 4px 20px -6px black;
 }
