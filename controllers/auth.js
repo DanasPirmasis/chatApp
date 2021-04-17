@@ -2,9 +2,12 @@ const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const sendEmail = require('../utils/sendEmail');
 const crypto = require('crypto');
+const sanitize = require('mongo-sanitize');
 
 exports.register = async (req, res, next) => {
-	const { username, email, password } = req.body;
+	const username = sanitize(req.body.username);
+	const email = sanitize(req.body.email);
+	const password = sanitize(req.body.password);
 
 	try {
 		const user = await User.create({
@@ -20,7 +23,8 @@ exports.register = async (req, res, next) => {
 };
 
 exports.login = async (req, res, next) => {
-	const { email, password } = req.body;
+	const email = sanitize(req.body.email);
+	const password = sanitize(req.body.password);
 
 	if (!email || !password) {
 		return next(new ErrorResponse('Please provide email and password', 400));
@@ -46,7 +50,7 @@ exports.login = async (req, res, next) => {
 };
 
 exports.forgotpassword = async (req, res, next) => {
-	const { email } = req.body;
+	const email = sanitize(req.body.email);
 
 	try {
 		const user = await User.findOne({ email });

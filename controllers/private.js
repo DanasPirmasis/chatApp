@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 const ErrorResponse = require('../utils/errorResponse');
+const sanitize = require('mongo-sanitize');
 
 exports.getPrivateData = (req, res, next) => {
 	res.status(200).json({
@@ -15,8 +16,8 @@ exports.getPrivateData = (req, res, next) => {
 };
 
 exports.getUsers = async (req, res, next) => {
-	const inputUsername = req.body.inputUsername;
-	console.log(req.body);
+	const inputUsername = sanitizez(req.body.inputUsername);
+
 	if (!inputUsername) {
 		return next(new ErrorResponse('Please enter a username', 400));
 	}
@@ -29,7 +30,6 @@ exports.getUsers = async (req, res, next) => {
 		}
 
 		let usernamesList = user.map((a) => a.username);
-		//console.log(usernamesList);
 
 		res.status(200).json({
 			success: true,
@@ -41,13 +41,12 @@ exports.getUsers = async (req, res, next) => {
 };
 
 exports.newConversation = async (req, res, next) => {
-	const recipients = req.body.recipients;
+	const recipients = sanitize(req.body.recipients);
 
 	if (!recipients) {
 		res.status(500).json({ success: false, error: error.message });
 	}
-	console.log(recipients);
-	// creatorID receiverID
+
 	try {
 		let result = await Conversation.findOne({ recipients: recipients });
 
@@ -81,7 +80,7 @@ exports.newConversation = async (req, res, next) => {
 };
 
 exports.getMessages = async (req, res, next) => {
-	const conversationID = req.body.conversationID;
+	const conversationID = sanitize(req.body.conversationID);
 
 	try {
 		const messages = await Message.find({ conversation: conversationID });
@@ -96,8 +95,9 @@ exports.getMessages = async (req, res, next) => {
 };
 
 exports.postMessage = async (req, res, next) => {
-	const { conversationID, from, body } = req.body;
-
+	const conversationID = sanitize(req.body.conversationID);
+	const from = sanitize(req.body.from);
+	const body = sanitize(req.body.body);
 	try {
 		const message = await Message.create({
 			conversation: conversationID,
@@ -114,7 +114,7 @@ exports.postMessage = async (req, res, next) => {
 };
 
 exports.getConversationRecipientUsernames = async (req, res, next) => {
-	const conversationID = req.body.conversationID;
+	const conversationID = sanitize(req.body.conversationID);
 
 	try {
 		if (!conversationID) {
@@ -124,7 +124,6 @@ exports.getConversationRecipientUsernames = async (req, res, next) => {
 
 		let recipientUsernames = [];
 
-		console.log(conversation.recipients.length);
 		for (const id of conversation.recipients) {
 			let user = await User.findById(id);
 			let username = user.username;

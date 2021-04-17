@@ -1,14 +1,11 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Sidebar from './Sidebar';
-import Chat from './Chat'
-import "./PrivateScreen.css"
-
-
+import Chat from './Chat';
+import './PrivateScreen.css';
 
 const PrivateScreen = ({ history }) => {
 	const [error, setError] = useState('');
-	const [privateData, setPrivateData] = useState('');
 	const [conversationID, setConversationID] = useState('');
 	const [inputUsername, setInputUsername] = useState('');
 	const [outputUsernames, setOutputUsernames] = useState('');
@@ -43,8 +40,6 @@ const PrivateScreen = ({ history }) => {
 			}
 		};
 
-		
-		
 		//console.log(localStorage);
 		fetchPrivateData();
 	}, [history]);
@@ -77,7 +72,6 @@ const PrivateScreen = ({ history }) => {
 		}
 	};
 
-
 	const fetchMessages = async (e) => {
 		e.preventDefault();
 		const config = {
@@ -108,11 +102,6 @@ const PrivateScreen = ({ history }) => {
 		}
 	};
 
-
-
-
-
-
 	const getMessagesHandler = async () => {
 		const config = {
 			header: {
@@ -142,11 +131,7 @@ const PrivateScreen = ({ history }) => {
 		}
 	};
 
-
-
-
 	const sendMessagesHandler = async () => {
-
 		const config = {
 			header: {
 				'Content-Type': 'application/json',
@@ -154,11 +139,11 @@ const PrivateScreen = ({ history }) => {
 			},
 		};
 		try {
-			console.log(conversationID)
+			console.log(conversationID);
 			const { data } = await axios({
 				method: 'post',
 				url: '/api/private/postmessage',
-				data: { conversationID, from:userID, body:input},
+				data: { conversationID, from: userID, body: input },
 				headers: config.header,
 			});
 			console.log(data);
@@ -169,7 +154,6 @@ const PrivateScreen = ({ history }) => {
 			//setError(error.response.data.error);
 		}
 	};
-	
 
 	const sendMessage = (event) => {
 		event.preventDefault();
