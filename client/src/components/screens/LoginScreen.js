@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './LoginScreen.css';
+//import { io } from 'socket.io-client';
 
 const LoginScreen = ({ history }) => {
 	const [email, setEmail] = useState('');
@@ -16,7 +17,7 @@ const LoginScreen = ({ history }) => {
 
 	const loginHandler = async (e) => {
 		e.preventDefault();
-
+		//const socket = io();
 		const config = {
 			header: {
 				'Content-Type': 'application/json',

@@ -16,7 +16,7 @@ exports.getPrivateData = (req, res, next) => {
 };
 
 exports.getUsers = async (req, res, next) => {
-	const inputUsername = sanitizez(req.body.inputUsername);
+	const inputUsername = sanitize(req.body.inputUsername);
 
 	if (!inputUsername) {
 		return next(new ErrorResponse('Please enter a username', 400));
@@ -41,7 +41,7 @@ exports.getUsers = async (req, res, next) => {
 };
 
 exports.newConversation = async (req, res, next) => {
-	const recipients = sanitize(req.body.recipients);
+	const recipients = req.body.recipients;
 
 	if (!recipients) {
 		res.status(500).json({ success: false, error: error.message });
@@ -67,8 +67,6 @@ exports.newConversation = async (req, res, next) => {
 				data: conversation,
 			});
 		} else {
-			console.log(result);
-
 			res.status(200).json({
 				success: true,
 				data: result,
@@ -97,11 +95,17 @@ exports.getMessages = async (req, res, next) => {
 exports.postMessage = async (req, res, next) => {
 	const conversationID = sanitize(req.body.conversationID);
 	const from = sanitize(req.body.from);
+	const fromUsername = sanitize(req.body.fromUsername);
 	const body = sanitize(req.body.body);
+	console.log(conversationID);
+	console.log(from);
+	console.log(fromUsername);
+	console.log(body);
 	try {
 		const message = await Message.create({
 			conversation: conversationID,
 			from: from,
+			fromUsername: fromUsername,
 			body: body,
 		});
 		res.status(200).json({
@@ -133,6 +137,25 @@ exports.getConversationRecipientUsernames = async (req, res, next) => {
 		res.status(200).json({
 			success: true,
 			data: recipientUsernames,
+		});
+	} catch (error) {
+		res.status(500).json({ success: false, error: error.message });
+	}
+};
+
+exports.getConversationRecipientIDS = async (req, res, next) => {
+	const conversationID = sanitize(req.body.conversationID);
+
+	if (!conversationID) {
+		res.status(500).json({ success: false, error: error.message });
+	}
+
+	try {
+		const conversation = await Conversation.findById(conversationID);
+
+		res.status(200).json({
+			success: true,
+			data: conversation.recipients,
 		});
 	} catch (error) {
 		res.status(500).json({ success: false, error: error.message });
