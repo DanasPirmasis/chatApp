@@ -3,12 +3,12 @@ import React from 'react'
 import './Sidebar.css'
 import SidebarChat from './SidebarChat'
 
-function Sidebar({userSearchHandler, inputUsername, setInputUsername, outputUsernames}) {
+function Sidebar({userSearchHandler, inputUsername, setInputUsername, outputUsernames,usernameState}) {
     return (
         <div className="sidebar">
             <div className="sidebar__header">
                 <Avatar />
-                <h3>Welcome ustinas</h3>
+                <h3>Welcome {usernameState}</h3>
             </div>
 
 

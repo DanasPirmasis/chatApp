@@ -28,9 +28,9 @@ function Chat({ input, onTextChange, sendMessage, messages, username }) {
 			</div>
 
 			<div className="chat__footer">
-				<form>
-					<FormControl>
-						<InputLabel>Enter a message</InputLabel>
+				<form className="chat__footerForm">
+					<FormControl fullWidth>
+						<InputLabel >Enter a message</InputLabel>
 						<Input
 							onChange={(e) => onTextChange(e.target.value)}
 							value={input.message}

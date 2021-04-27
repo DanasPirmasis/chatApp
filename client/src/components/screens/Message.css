@@ -12,10 +12,10 @@
 }
 
 .message__userCard{
-    background-color: rgb(36, 4, 51) !important;
+    background-color: rgb(89, 103, 184)!important;
     
 }
 
 .message__guestCard{
-    background-color: rgb(255, 255, 255) !important;
+    background-color: rgb(190, 189, 189) !important;
 }

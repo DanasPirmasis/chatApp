@@ -38,7 +38,8 @@ function SidebarChat({addNewChat, userSearchHandler, inputUsername, setInputUser
 							</form>
 
                                 { outputUsernames >0 ? outputUsernames.map(outUser => (
-                                    <li>{outUser}</li>
+                                    <li>{outUser}</li>,
+                                    console.log(outUser)
 			                    )): <li>{outputUsernames}</li>}
                             <br/>
 							<button onClick={() => setModalOpen(false)}>Close</button>
