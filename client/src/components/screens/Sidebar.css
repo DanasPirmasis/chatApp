@@ -4,5 +4,20 @@
 }
 
 .sidebar__chats{
-    background-color: rgb(211, 122, 140);
+    background-color:rgb(89, 103, 184);
+    border-right: 1px solid rgb(51, 47, 47);
+}
+
+.sidebar__header{
+    padding: 18.5px;
+    display: flex;
+    align-items: center;
+    border-right: 1px solid rgb(51, 47, 47);
+    font-size: 15px;
+    border-bottom: 3px solid rgb(22, 21, 21);
+    background-color:rgb(89, 103, 184);
+}
+
+.sidebar__headerInfo{
+    padding-left:  0px;
 }

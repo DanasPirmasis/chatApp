@@ -1,22 +1,27 @@
 .chatApp{
+    display: grid;
+    place-items: center;
     background-color: rgb(209, 209, 209);
     height: 100vh;
 }
 
 .chatApp__body{
+
     display: flex;
-    background-color: white;
-    height: 500px;
-    width: 90vw;
+    background-color: rgb(209, 209, 209);
+    height: 86vh;
+    width: 110vh;
     box-shadow: -1px 4px 20px -6px black;
 }
 
 .chatApp__top{
-    display: grid;
-    place-items: center;
 }
 
 .chatApp__sidebar{
     width: 20vw;
-    background-color: crimson;
 }
+
+/*
+rgb(157, 190, 183)
+rgb(231, 50, 19)
+*/

@@ -81,8 +81,8 @@ const PrivateScreen = ({ history }) => {
 				headers: config.header,
 			});
 			console.log(data);
-			setOutputUsernames(data.data[0]);
-			console.log(data.data[0]);
+			setOutputUsernames(data.data);
+			console.log(data.data);
 
 			//history.push('/searchusers');
 		} catch (error) {
@@ -258,7 +258,6 @@ const PrivateScreen = ({ history }) => {
 		<>
 			<div className="chatApp">
 				<div className="chatApp__top">
-					<h2> Welcome {usernameState}</h2>
 					<button onClick={logoutHandler}>Logout</button>
 					<button onClick={fetchMessages}>Refresh</button>
 				</div>
@@ -269,6 +268,7 @@ const PrivateScreen = ({ history }) => {
 						inputUsername={inputUsername}
 						setInputUsername={setInputUsername}
 						outputUsernames={outputUsernames}
+						usernameState={usernameState}
 					/>
 
 					<Chat
