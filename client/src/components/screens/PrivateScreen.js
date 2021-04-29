@@ -24,6 +24,9 @@ const PrivateScreen = ({ history }) => {
 	const [usernameState, setUsernameState] = useState('');
 	const [userID, setUserID] = useState('');
 
+	//gif
+	const [sendGif,SetSendGif] =useState('')
+
 	const socket = io('http://localhost:5000/');
 
 	socket.on('askForUserId', () => {
@@ -237,6 +240,10 @@ const PrivateScreen = ({ history }) => {
 					/>
 
 					<Chat
+						SetSendGif= {SetSendGif}
+						messageState={messageState}
+						usernameState={usernameState}
+						setMessageState={setMessageState}
 						input={messageState}
 						onTextChange={onTextChange}
 						sendMessage={sendMessagesHandler}
