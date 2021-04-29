@@ -16,11 +16,12 @@ import GifIcon from '@material-ui/icons/Gif';
 import AttachmentIcon from '@material-ui/icons/Attachment';
 import Message from './Message';
 
-function Chat({ input, onTextChange, sendMessage, messages, username, setMessageState ,usernameState, messageState, SetSendGif}) {
+function Chat({ input, onTextChange, sendMessage, messages, username, setMessageState ,usernameState, messageState}) {
 	const [emojiModalOpen, setEmojiModalOpen] = useState(false);
 	const [gifModalOpen, setGifModalOpen] = useState(false);
 	const [fileModalOpen, setFileModalOpen] = useState(false);
 	const [fileSend, setFileSend] = useState(null);
+	const [showGif, setShowGif] = useState(null)
 
 	
 	const [chosenEmoji, setChosenEmoji] = useState('');
@@ -54,6 +55,7 @@ function Chat({ input, onTextChange, sendMessage, messages, username, setMessage
 				{messages.map((message) => (
 					<Message username={username} message={message}></Message>
 				))}
+				<img src={showGif} />
 			</div>
 
 			<div className="chat__footer">
@@ -68,7 +70,7 @@ function Chat({ input, onTextChange, sendMessage, messages, username, setMessage
 				<GifIcon onClick={() => setGifModalOpen(true)}/>
 					<Modal isOpen={gifModalOpen} onRequestClose={() => setGifModalOpen(false)}>
 						<Gif 
-							SetSendGif={SetSendGif}
+							setShowGif= {setShowGif}
 							setMessageState={setMessageState}
 							usernameState={usernameState}
 							messageState={messageState}
