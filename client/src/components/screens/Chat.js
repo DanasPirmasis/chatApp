@@ -21,7 +21,8 @@ function Chat({ input, onTextChange, sendMessage, messages, username, setMessage
 	const [gifModalOpen, setGifModalOpen] = useState(false);
 	const [fileModalOpen, setFileModalOpen] = useState(false);
 	const [fileSend, setFileSend] = useState(null);
-	const [showGif, setShowGif] = useState(null)
+	const [showGif, setShowGif] = useState(null);
+	const [search, setSearch] = useState('');
 
 	
 	const [chosenEmoji, setChosenEmoji] = useState('');
@@ -49,10 +50,24 @@ function Chat({ input, onTextChange, sendMessage, messages, username, setMessage
 					<h3>Room name</h3>
 					<p>last seen</p>
 				</div>
+				<div>
+					<input type="search"
+						placeholder="Search in chat"
+						onChange={(e) => setSearch(e.target.value)}
+							></input>
+					<button>Search</button>
+				</div>
 			</div>
 
 			<div className="chat__body">
-					{messages.map((message) => (
+					{messages.filter((val) => {
+						if(search ==''){
+							return val
+						}else if (val.message.toLowerCase().includes(search.toLowerCase())){
+							return val
+						}
+					}
+					).map((message) => (
 					<Message username={username} message={message}></Message>
 				))}
 			</div>
