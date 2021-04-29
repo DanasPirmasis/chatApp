@@ -9,7 +9,7 @@ function Message({ message, username }) {
 			<Card className={isUser ? 'message__userCard' : 'message__guestCard'}>
 				<CardContent>
 					<Typography color="initial" varinat="h5" component="h2">
-						{message.username}: {message.message}
+						{message.username}: {message.message.includes('giphy') ? <img src={message.message}/> : message.message}
 					</Typography>
 				</CardContent>
 			</Card>

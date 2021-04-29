@@ -3,7 +3,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import './Gif.css'
 
-function Gif({setMessageState, usernameState, messageState, setShowGif}) {
+function Gif({setMessageState, usernameState, messageState, setShowGif, setGifModalOpen}) {
 const [data, setData]= useState([]);
 const [isloading, setIsLoading] = useState(false);
 const [search, setSearch] = useState('');
@@ -22,8 +22,9 @@ useEffect(()=>{
 },[]);
 
 const handleGif= (el) =>{
-    //setMessageState({...messageState, username: usernameState, message: <img  src ={el.images.fixed_height.url}/>});
-    setShowGif(el.images.fixed_height.url)
+    setMessageState({...messageState, username: usernameState, message: el.images.fixed_height.url});
+    setGifModalOpen(false);
+    //setShowGif(el.images.fixed_height.url)
     //console.log(el.images.fixed_height.url);
 }
 

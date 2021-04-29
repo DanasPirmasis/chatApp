@@ -52,10 +52,9 @@ function Chat({ input, onTextChange, sendMessage, messages, username, setMessage
 			</div>
 
 			<div className="chat__body">
-				{messages.map((message) => (
+					{messages.map((message) => (
 					<Message username={username} message={message}></Message>
 				))}
-				<img src={showGif} />
 			</div>
 
 			<div className="chat__footer">
@@ -70,6 +69,7 @@ function Chat({ input, onTextChange, sendMessage, messages, username, setMessage
 				<GifIcon onClick={() => setGifModalOpen(true)}/>
 					<Modal isOpen={gifModalOpen} onRequestClose={() => setGifModalOpen(false)}>
 						<Gif 
+							setGifModalOpen={setGifModalOpen}
 							setShowGif= {setShowGif}
 							setMessageState={setMessageState}
 							usernameState={usernameState}
