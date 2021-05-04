@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './LoginScreen.css';
-//import { io } from 'socket.io-client';
 
 const LoginScreen = ({ history }) => {
 	const [email, setEmail] = useState('');
@@ -15,9 +14,29 @@ const LoginScreen = ({ history }) => {
 		}
 	}, [history]);
 
+	const fetchPrivateData = async () => {
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+			},
+		};
+
+		try {
+			const { data } = await axios.get('/api/private', config);
+			return {
+				username: data.data.username,
+				conversationIDS: data.data.conversationIDS,
+				userId: data.data._id,
+			};
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	const loginHandler = async (e) => {
 		e.preventDefault();
-		//const socket = io();
+
 		const config = {
 			header: {
 				'Content-Type': 'application/json',
@@ -30,8 +49,13 @@ const LoginScreen = ({ history }) => {
 				{ email, password },
 				config
 			);
+
 			localStorage.setItem('authToken', data.token);
 
+			const userData = await fetchPrivateData();
+			localStorage.setItem('username', userData.username);
+			localStorage.setItem('conversationIDS', userData.conversationIDS);
+			localStorage.setItem('userID', userData.userId);
 			history.push('/');
 		} catch (error) {
 			setError(error.response.data.error);
@@ -56,6 +80,7 @@ const LoginScreen = ({ history }) => {
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
 						tabIndex={1}
+						maxLength={64}
 					/>
 				</div>
 
@@ -78,6 +103,7 @@ const LoginScreen = ({ history }) => {
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
 						tabIndex={2}
+						maxLength={32}
 					/>
 				</div>
 				<button type="submit" className="btn btn-primary" tabIndex={3}>
