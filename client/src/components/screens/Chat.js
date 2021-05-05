@@ -73,7 +73,6 @@ function Chat({
 						placeholder="Search in chat"
 						onChange={(e) => setSearch(e.target.value)}
 					></input>
-					<button>Search</button>
 				</div>
 			</div>
 

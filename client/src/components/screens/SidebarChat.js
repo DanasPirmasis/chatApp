@@ -14,6 +14,16 @@ function SidebarChat({addNewChat, userSearchHandler, inputUsername, setInputUser
 
     };
 
+    const renderUsers =() =>{
+        return outputUsernames.map((el) =>{
+            return(
+                <div className="user__names"  >
+                    <li>el</li>
+                </div>
+            )
+        })
+    }
+
 
     return !addNewChat ?(
         <div className="sidebarChat">
@@ -37,10 +47,13 @@ function SidebarChat({addNewChat, userSearchHandler, inputUsername, setInputUser
 								<button type="submit">New Message</button>
 							</form>
 
-                                { outputUsernames >0 ? outputUsernames.map(outUser => (
-                                    <li>{outUser}</li>,
-                                    console.log(outUser)
-			                    )): <li>{outputUsernames}</li>}
+                                {
+                                outputUsernames.map(el =>(
+                                    <div className="user__names" key={el}>
+                                        <li>{el}</li>
+                                    </div>
+                                ))}
+ 
                             <br/>
 							<button onClick={() => setModalOpen(false)}>Close</button>
 						</Modal>

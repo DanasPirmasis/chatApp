@@ -15,9 +15,9 @@ const socket = io('http://localhost:5000/', {
 const PrivateScreen = ({ history }) => {
 	const [error, setError] = useState('');
 	//input for search
-	const [inputUsername, setInputUsername] = useState('');
+	const [inputUsername, setInputUsername] = useState();
 	//usernames to display conversations
-	const [outputUsernames, setOutputUsernames] = useState('');
+	const [outputUsernames, setOutputUsernames] = useState(['No user']);
 	//input data from sendMessagesHandler
 	const [messageState, setMessageState] = useState({
 		recipientID: '',
@@ -69,7 +69,7 @@ const PrivateScreen = ({ history }) => {
 				data: { inputUsername },
 				headers: config.header,
 			});
-			console.log(data);
+			//console.log(data);
 			setOutputUsernames(data.data);
 			console.log(data.data);
 
