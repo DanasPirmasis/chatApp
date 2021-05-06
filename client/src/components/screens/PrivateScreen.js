@@ -17,7 +17,7 @@ const PrivateScreen = ({ history }) => {
 	//input for search
 	const [inputUsername, setInputUsername] = useState();
 	//usernames to display conversations
-	const [outputUsernames, setOutputUsernames] = useState(['No user']);
+	const [outputUsernames, setOutputUsernames] = useState(['']);
 	//input data from sendMessagesHandler
 	const [messageState, setMessageState] = useState({
 		recipientID: '',

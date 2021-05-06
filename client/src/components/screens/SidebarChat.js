@@ -6,33 +6,30 @@ import Modal from 'react-modal';
 
 Modal.setAppElement('#root');
 
-function SidebarChat({addNewChat, userSearchHandler, inputUsername, setInputUsername, outputUsernames}) {
+function SidebarChat({addNewChat, userSearchHandler, inputUsername, setInputUsername, outputUsernames, userSelect, setuserSelect}) {
 
     const [modalOpen, setModalOpen] = useState(false);
 
-    const createChat = () =>{
 
+    const createChat = (e) =>{
     };
 
     const renderUsers =() =>{
-        return outputUsernames.map((el) =>{
-            return(
-                <div className="user__names"  >
-                    <li>el</li>
-                </div>
-            )
-        })
+        
     }
 
 
     return !addNewChat ?(
+        userSelect!=='' ? (
         <div className="sidebarChat">
             <Avatar />
             <div className ="sidebarChat__info">
-                <h3>Room name</h3>
+                <h3>Room with {userSelect}</h3>
                 <p>Last message...</p>
             </div>
-        </div>
+        </div>) :
+        (<>
+        </>)
     ): (
         <div onClick={createChat} className="sidebarChat">
             <h3 onClick={() => setModalOpen(true)}>Open new message</h3>
@@ -49,10 +46,13 @@ function SidebarChat({addNewChat, userSearchHandler, inputUsername, setInputUser
 
                                 {
                                 outputUsernames.map(el =>(
-                                    <div className="user__names" key={el}>
-                                        <li>{el}</li>
+                                    <div onClick={() =>setuserSelect(el)}    className="user__names" key={el}>
+                                        <li >{el}</li>
                                     </div>
                                 ))}
+
+                                {console.log(userSelect)}
+
  
                             <br/>
 							<button onClick={() => setModalOpen(false)}>Close</button>
