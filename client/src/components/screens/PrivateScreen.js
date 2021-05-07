@@ -31,7 +31,7 @@ const PrivateScreen = ({ history }) => {
 	//const [conversationID, setConversationID] = useState('');
 
 	socket.on('askForUserId', () => {
-		console.log('askforuserid');
+		//console.log('askforuserid');
 		socket.emit('userIdReceived', localStorage.getItem('userID'));
 	});
 
@@ -69,7 +69,7 @@ const PrivateScreen = ({ history }) => {
 				data: { inputUsername },
 				headers: config.header,
 			});
-			//console.log(data);
+			console.log(data);
 			setOutputUsernames(data.data);
 			console.log(data.data);
 
@@ -125,7 +125,7 @@ const PrivateScreen = ({ history }) => {
 
 	const fetchMessages = async (e) => {
 		//e.preventDefault();
-
+		setChat([]);
 		const config = {
 			headers: {
 				'Content-Type': 'application/json',
@@ -161,43 +161,38 @@ const PrivateScreen = ({ history }) => {
 		const { username, message, file } = messageState;
 		const recipientID = '607710a96b5ccc0ee4a70309';
 
-		// const config = {
-		// 	header: {
-		// 		'Content-Type': 'application/json',
-		// 		Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-		// 	},
-		// };
-		// try {
-		// 	const { data } = await axios({
-		// 		method: 'post',
-		// 		url: '/api/private/postmessage',
-		// 		data: {
-		// 			conversationID: localStorage.getItem('conversationIDS'), //Cia turi atsirast conversationID is room name paspaudimo
-		// 			from: localStorage.getItem('userID'),
-		// 			fromUsername: username,
-		// 			body: message,
-		// 			file: file,
-		// 		},
-		// 		headers: config.header,
-		// 	});
-		// 	console.log(data);
-		// } catch (error) {
-		// 	console.log(error);
-		// }
+		const config = {
+			header: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+			},
+		};
+		try {
+			const { data } = await axios({
+				method: 'post',
+				url: '/api/private/postmessage',
+				data: {
+					conversationID: localStorage.getItem('conversationIDS'), //Cia turi atsirast conversationID is room name paspaudimo
+					from: localStorage.getItem('userID'),
+					fromUsername: username,
+					body: message,
+					file: file,
+				},
+				headers: config.header,
+			});
+			console.log(data);
+		} catch (error) {
+			setError(error.response.data.error);
+		}
 
 		//Pacio userio zinute reiktu pridet per fronta, o ne per socket requesta
 		// console.log(localStorage.getItem('userID'));
 		// console.log(message);
 
-		// socket.emit('message', {
-		// 	recipientID: localStorage.getItem('userID'),
-		// 	username,
-		// 	message,
-		// 	file,
-		// });
-		console.log('sd');
 		setChat([...chat, { username, message, file }]);
+
 		socket.emit('message', { recipientID, username, message, file });
+
 		e.preventDefault();
 		setMessageState({ message: '', username, file: '' });
 	};
@@ -247,6 +242,7 @@ const PrivateScreen = ({ history }) => {
 						sendMessage={sendMessagesHandler}
 						messages={chat}
 						username={localStorage.getItem('username')}
+						error={setError}
 					/>
 				</div>
 			</div>

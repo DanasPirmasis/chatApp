@@ -37,15 +37,9 @@ let a = 0;
 let b = 0;
 let c = 0;
 io.on('connection', (socket) => {
-	console.log(`Connected times: ${a++}`);
 	io.emit('askForUserId');
 
-	socket.on('disconnect', () => {
-		console.log(`Connected times: ${c++}`);
-	});
-
 	socket.on('userIdReceived', (userId) => {
-		console.log(`userIdReceived times: ${b++}`);
 		sessionsMap[userId] = socket.id;
 	});
 

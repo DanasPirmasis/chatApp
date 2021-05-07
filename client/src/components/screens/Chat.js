@@ -25,6 +25,7 @@ function Chat({
 	setMessageState,
 	usernameState,
 	messageState,
+	errorState,
 }) {
 	const [emojiModalOpen, setEmojiModalOpen] = useState(false);
 	const [gifModalOpen, setGifModalOpen] = useState(false);
@@ -42,8 +43,18 @@ function Chat({
 		});
 	};
 
+	const fileModalSendHandler = (e) => {
+		sendMessage(e);
+		setFileModalOpen(false);
+	};
+
 	const fileHandler = async (e) => {
 		console.log(e.target.files[0]);
+
+		if (e.target.files[0].size > 16000000) {
+			errorState('File size too big');
+		}
+
 		const file = await toBase64(e.target.files[0]);
 		//console.log(file);
 		setMessageState({ username: usernameState, file: file });
@@ -106,7 +117,7 @@ function Chat({
 							type="file"
 							onChange={(e) => fileHandler(e)}
 						></input>
-						<button onClick={sendMessage}>Upload</button>
+						<button onClick={fileModalSendHandler}>Upload</button>
 					</div>
 				</Modal>
 

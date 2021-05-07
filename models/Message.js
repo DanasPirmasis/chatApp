@@ -22,7 +22,7 @@ const MessageSchema = new mongoose.Schema({
 		maxLength: [640, 'Message is too long'],
 	},
 	file: {
-		type: Buffer,
+		type: String,
 	},
 	fileType: {
 		type: String,

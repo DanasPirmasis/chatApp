@@ -21,6 +21,7 @@ exports.protect = async (req, res, next) => {
 		const user = await User.findById(decoded.id);
 
 		if (!user) {
+			console.log('No user found with this ID');
 			return next(new ErrorResponse('No user found with this ID', 404));
 		}
 
@@ -28,6 +29,8 @@ exports.protect = async (req, res, next) => {
 
 		next();
 	} catch (error) {
+		console.log('Token expired');
+		console.log(error);
 		return next(new ErrorResponse('Unauthorized to access this route', 401));
 	}
 };

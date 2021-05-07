@@ -3,7 +3,7 @@ const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 const ErrorResponse = require('../utils/errorResponse');
 const sanitize = require('mongo-sanitize');
-const acceptedFileTypes = ['image/png, image/jpeg, image/gif'];
+const acceptedFileTypes = ['image/png', 'image/jpeg', 'image/gif'];
 //return next(new ErrorResponse('Email could not be sent', 404));
 
 exports.getPrivateData = (req, res, next) => {
@@ -81,10 +81,10 @@ exports.newConversation = async (req, res, next) => {
 
 exports.getMessages = async (req, res, next) => {
 	const conversationID = sanitize(req.body.conversationID);
-	console.log(conversationID);
+
 	try {
 		const messages = await Message.find({ conversation: conversationID });
-		//console.log(messages);
+
 		res.status(200).json({
 			success: true,
 			data: messages,
@@ -95,18 +95,17 @@ exports.getMessages = async (req, res, next) => {
 };
 
 exports.postMessage = async (req, res, next) => {
-	console.log(req.body);
 	const conversationID = sanitize(req.body.conversationID);
 	const from = sanitize(req.body.from);
 	const fromUsername = sanitize(req.body.fromUsername);
 	const body = sanitize(req.body.body);
 	const file = req.body.file;
 
-	console.log(conversationID);
-	console.log(from);
-	console.log(fromUsername);
-	console.log(body);
-	console.log(file);
+	// console.log(conversationID);
+	// console.log(from);
+	// console.log(fromUsername);
+	// console.log(body);
+	// console.log(file);
 
 	if (file === '') {
 		try {
@@ -121,29 +120,32 @@ exports.postMessage = async (req, res, next) => {
 				data: message._id,
 			});
 		} catch (error) {
-			console.log(error);
+			console.log('First error: ' + error);
 			res.status(500).json({ success: false, error: error.message });
 		}
 	} else {
-		const fileJSON = JSON.parse(file);
-		if (fileJSON != null && acceptedFileTypes.includes(fileJSON.type)) {
+		let fileType = file.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
+
+		if (acceptedFileTypes.includes(fileType) === true) {
 			try {
 				const message = await Message.create({
 					conversation: conversationID,
 					from: from,
 					fromUsername: fromUsername,
 					body: body,
-					file: new Buffer.from(fileJSON.data, 'base64'),
-					fileType: fileJSON.type,
+					file: file,
+					fileType: fileType,
 				});
 				res.status(200).json({
 					success: true,
 					data: message._id,
 				});
 			} catch (error) {
-				console.log(error);
+				console.log('Second error: ' + error);
 				res.status(500).json({ success: false, error: error.message });
 			}
+		} else {
+			return next(new ErrorResponse('Untrusted file type', 415));
 		}
 	}
 };
