@@ -6,18 +6,16 @@ function Message({ message, username }) {
 	const isUser = username === message.username;
 
 	const textToDisplay = () => {
-		if (
-			message.message !== undefined &&
-			(message.file === undefined || message.file === '')
-		) {
+		console.log(message);
+		if (message.file === '') {
 			if (message.message.includes('giphy')) {
 				return <img src={message.message} alt={''} />;
 			}
 			return message.username + ' : ' + message.message;
-		} else if (message.message === undefined && message.file !== undefined) {
-			return <img src={`data:image/png;base64 ${message.file}`} alt={''} />;
+		} else if (message.message === '' && message.file !== undefined) {
+			return <img src={`${message.file}`} alt={''} />;
 		}
-		return 'Something went wrong';
+		return 'Something went wrong Message.js';
 	};
 
 	return (

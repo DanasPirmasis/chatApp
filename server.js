@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
 	socket.on('message', ({ recipientID, username, message, file }) => {
 		console.log(sessionsMap);
 		const socketID = sessionsMap[recipientID];
-		socket.to(socketID).emit('message', { username, message, file });
+		socket.to(socketID).emit('messageReceived', { username, message, file });
 		// console.log(socketID);
 		console.log(recipientID);
 		console.log(message);

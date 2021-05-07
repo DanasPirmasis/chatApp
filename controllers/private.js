@@ -98,7 +98,9 @@ exports.postMessage = async (req, res, next) => {
 	const conversationID = sanitize(req.body.conversationID);
 	const from = sanitize(req.body.from);
 	const fromUsername = sanitize(req.body.fromUsername);
-	const body = sanitize(req.body.body);
+	let body = sanitize(req.body.body);
+	if (body === undefined) body = '';
+	//Fix to shorthand if statement
 	const file = req.body.file;
 
 	// console.log(conversationID);
@@ -113,6 +115,8 @@ exports.postMessage = async (req, res, next) => {
 				conversation: conversationID,
 				from: from,
 				fromUsername: fromUsername,
+				file: file,
+				fileType: 'empty',
 				body: body,
 			});
 			res.status(200).json({

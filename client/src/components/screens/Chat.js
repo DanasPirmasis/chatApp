@@ -53,10 +53,11 @@ function Chat({
 
 		if (e.target.files[0].size > 16000000) {
 			errorState('File size too big');
+			return;
 		}
 
 		const file = await toBase64(e.target.files[0]);
-		//console.log(file);
+		console.log(file);
 		setMessageState({ username: usernameState, file: file });
 		console.log(messageState);
 	};
@@ -91,12 +92,11 @@ function Chat({
 				{messages
 					.filter((val) => {
 						if (search === '') {
+							console.log('search is empty');
 							return val;
 						} else if (
 							val.message.toLowerCase().includes(search.toLowerCase())
 						) {
-							return val;
-						} else {
 							return val;
 						}
 					})
