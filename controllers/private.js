@@ -83,13 +83,16 @@ exports.getMessages = async (req, res, next) => {
 	const conversationID = sanitize(req.body.conversationID);
 
 	try {
-		const messages = await Message.find({ conversation: conversationID });
+		const messages = await Message.find({ conversation: conversationID }).limit(
+			50
+		);
 
 		res.status(200).json({
 			success: true,
 			data: messages,
 		});
 	} catch (error) {
+		console.log(error);
 		res.status(500).json({ success: false, error: error.message });
 	}
 };
