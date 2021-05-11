@@ -185,10 +185,6 @@ const PrivateScreen = ({ history }) => {
 			setError(error.response.data.error);
 		}
 
-		//Pacio userio zinute reiktu pridet per fronta, o ne per socket requesta
-		// console.log(localStorage.getItem('userID'));
-		// console.log(message);
-
 		setChat([...chat, { username, message, file }]);
 
 		socket.emit('message', { recipientID, username, message, file });

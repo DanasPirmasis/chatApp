@@ -1,11 +1,15 @@
 import { Card, CardContent, Typography } from '@material-ui/core';
-import { useState, useEffect } from 'react'; 
+import { useState, useEffect } from 'react';
+import EditIcon from '@material-ui/icons/Edit';
+import CheckIcon from '@material-ui/icons/Check';
+import ClearIcon from '@material-ui/icons/Clear';
 import React from 'react';
 import './Message.css';
 
 function Message({ message, username }) {
 	const [edit, setEdit] = useState(false);
 	const [input, setInput] = useState('');
+	const [style, setStyle] = useState({ display: 'none' });
 	const isUser = username === message.username;
 
 	const textToDisplay = () => {
@@ -20,23 +24,68 @@ function Message({ message, username }) {
 		return 'Something went wrong Message.js';
 	};
 
-	const openEditText =(info) =>{
-		setEdit(edit ?false: true)
+	const openEditText = (info) => {
+		setEdit(edit ? false : true);
 		//console.log(info)
-	}
-	const editText =(info) =>{
-		console.log(info)
-		message.message=input;
-		setEdit(false)
-	}
+	};
+	const editText = (info) => {
+		console.log(info);
+		console.log(input);
+		if (input !== '') {
+			message.message = input;
+		}
+		setEdit(false);
+	};
+
+	const addEditButtonOnHover = () => {
+		if (isUser) {
+			return (
+				<EditIcon
+					fontSize="small"
+					style={style}
+					onClick={() => openEditText(message.message)}
+				></EditIcon>
+			);
+		}
+	};
 
 	return (
 		<div className={`message ${isUser && 'message_user'}`}>
-			{isUser ? <button onClick={() => openEditText(message.message)}>Edit</button> : <></>}
 			<Card className={isUser ? 'message__userCard' : 'message__guestCard'}>
 				<CardContent>
 					<Typography color="initial" varinat="h5" component="h2">
-						{edit ? <div> <input placeholder={message.message} onChange={(e) =>setInput(e.target.value)}></input> <button onClick={() => editText(message.message)}>Change</button> </div> : textToDisplay()}
+						{edit ? (
+							<div
+								style={{
+									display: 'flex',
+									alignItems: 'center',
+									flexWrap: 'wrap',
+								}}
+							>
+								<input
+									placeholder={message.message}
+									onChange={(e) => setInput(e.target.value)}
+								></input>
+								<CheckIcon
+									fontSize="small"
+									onClick={() => editText(message.message)}
+								>
+									Change
+								</CheckIcon>
+								<ClearIcon
+									fontSize="small"
+									onClick={() => setEdit(false)}
+								></ClearIcon>
+							</div>
+						) : (
+							<div
+								onMouseEnter={(e) => setStyle({ display: 'block' })}
+								onMouseLeave={(e) => setStyle({ display: 'none' })}
+							>
+								{addEditButtonOnHover()}
+								<div>{textToDisplay()}</div>
+							</div>
+						)}
 					</Typography>
 				</CardContent>
 			</Card>
