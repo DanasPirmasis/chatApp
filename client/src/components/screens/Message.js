@@ -12,18 +12,45 @@ function Message({ message, username }) {
 	const [input, setInput] = useState('');
 	const [style, setStyle] = useState({ display: 'none' });
 	const isUser = username === message.username;
+	const imageFileTypes = ['image/png', 'image/jpeg', 'image/gif'];
 
 	const textToDisplay = () => {
+		//console.log(message);
 		if (message.file === '') {
 			if (message.message.includes('giphy')) {
 				return <img src={message.message} alt={''} />;
 			}
 			return message.username + ' : ' + message.message;
-		} else if (message.message === '' && message.file !== undefined) {
+		} else if (
+			(message.message === '' || message.message === undefined) &&
+			message.file !== undefined &&
+			imageFileTypes.includes(message.fileType)
+		) {
 			return <img src={`${message.file}`} alt={''} />;
+		} else if (
+			(message.message === '' || message.message === undefined) &&
+			message.file !== undefined
+		) {
+			return (
+				<button
+					className={'button'}
+					onClick={() => {
+						downloadFile(message.file, message.fileName);
+					}}
+				>
+					{message.fileName}
+				</button>
+			);
 		}
 		return 'Something went wrong Message.js';
 	};
+
+	function downloadFile(file, fileName) {
+		let a = document.createElement('a');
+		a.href = file;
+		a.download = fileName;
+		a.click();
+	}
 
 	const openEditText = () => {
 		setEdit(edit ? false : true);

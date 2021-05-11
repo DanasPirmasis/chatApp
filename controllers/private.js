@@ -3,7 +3,27 @@ const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 const ErrorResponse = require('../utils/errorResponse');
 const sanitize = require('mongo-sanitize');
-const acceptedFileTypes = ['image/png', 'image/jpeg', 'image/gif'];
+const acceptedFileTypes = [
+	'image/png',
+	'image/jpeg',
+	'image/gif',
+	'text/css',
+	'text/csv',
+	'video/x-msvideo',
+	'application/msword',
+	'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+	'text/html',
+	'text/javascript',
+	'audio/mpeg',
+	'video/mp4',
+	'application/pdf',
+	'application/vnd.ms-powerpoint',
+	'text/plain',
+	'application/vnd.ms-excel',
+	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+	'application/zip',
+	'application/x-7z-compressed',
+];
 //return next(new ErrorResponse('Email could not be sent', 404));
 
 exports.getPrivateData = (req, res, next) => {
@@ -105,7 +125,7 @@ exports.postMessage = async (req, res, next) => {
 	if (body === undefined) body = '';
 	//Fix to shorthand if statement
 	const file = req.body.file;
-
+	const fileName = req.body.fileName;
 	// console.log(conversationID);
 	// console.log(from);
 	// console.log(fromUsername);
@@ -142,6 +162,7 @@ exports.postMessage = async (req, res, next) => {
 					body: body,
 					file: file,
 					fileType: fileType,
+					fileName: fileName,
 				});
 				res.status(200).json({
 					success: true,

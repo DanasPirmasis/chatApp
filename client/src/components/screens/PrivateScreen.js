@@ -25,6 +25,8 @@ const PrivateScreen = ({ history }) => {
 		message: '',
 		messageID: '',
 		file: '',
+		fileType: '',
+		fileName: '',
 	});
 	//data from fetchMessages
 	const [chat, setChat] = useState([]);
@@ -149,8 +151,17 @@ const PrivateScreen = ({ history }) => {
 				let username = data.data[i].fromUsername;
 				let message = data.data[i].body;
 				let file = data.data[i].file;
+				let fileType = data.data[i].fileType;
+				let fileName = data.data[i].fileName;
 				let messageID = data.data[i]._id;
-				messageUsernameArray.push({ username, message, file, messageID });
+				messageUsernameArray.push({
+					username,
+					message,
+					file,
+					messageID,
+					fileType,
+					fileName,
+				});
 			}
 			setChat(messageUsernameArray);
 		} catch (error) {
@@ -160,7 +171,7 @@ const PrivateScreen = ({ history }) => {
 
 	const sendMessagesHandler = async (e) => {
 		e.preventDefault();
-		const { username, message, file } = messageState;
+		const { username, message, file, fileType, fileName } = messageState;
 		const recipientID = '607710a96b5ccc0ee4a70309';
 
 		const config = {
@@ -179,19 +190,30 @@ const PrivateScreen = ({ history }) => {
 					fromUsername: username,
 					body: message,
 					file: file,
+					fileName: fileName,
 				},
 				headers: config.header,
 			});
 
-			setChat([...chat, { username, message, file, messageID: data.data }]);
+			setChat([
+				...chat,
+				{ username, message, file, fileType, fileName, messageID: data.data },
+			]);
 		} catch (error) {
 			setError(error.response.data.error);
 		}
-
+		//Probably should send messageState instead of variables!!!
 		socket.emit('message', { recipientID, username, message, file });
 
 		//e.preventDefault();
-		setMessageState({ message: '', username, file: '', messageID: '' });
+		setMessageState({
+			message: '',
+			username,
+			file: '',
+			messageID: '',
+			fileName: '',
+			fileType: '',
+		});
 	};
 
 	const onTextChange = (e) => {

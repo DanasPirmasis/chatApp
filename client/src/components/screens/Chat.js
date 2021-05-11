@@ -59,7 +59,12 @@ function Chat({
 
 		const file = await toBase64(e.target.files[0]);
 		console.log(file);
-		setMessageState({ username: usernameState, file: file });
+		setMessageState({
+			username: usernameState,
+			file: file,
+			fileType: e.target.files[0].type,
+			fileName: e.target.files[0].name,
+		});
 		console.log(messageState);
 	};
 
