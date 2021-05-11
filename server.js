@@ -5,6 +5,7 @@ const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error');
 const app = express();
 const server = require('http').Server(app);
+
 // Connect DB
 connectDB();
 
@@ -32,7 +33,9 @@ const io = socket(server, {
 });
 
 const sessionsMap = {};
-
+let a = 0;
+let b = 0;
+let c = 0;
 io.on('connection', (socket) => {
 	io.emit('askForUserId');
 
@@ -40,13 +43,13 @@ io.on('connection', (socket) => {
 		sessionsMap[userId] = socket.id;
 	});
 
-	socket.on('message', ({ recipientID, username, message }) => {
+	socket.on('message', ({ recipientID, username, message, file }) => {
 		console.log(sessionsMap);
 		const socketID = sessionsMap[recipientID];
-		socket.to(socketID).emit('message', { username, message });
+		socket.to(socketID).emit('messageReceived', { username, message, file });
 		// console.log(socketID);
-		// console.log(recipientID);
-		// console.log(message);
+		console.log(recipientID);
+		console.log(message);
 	});
 });
 

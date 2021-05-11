@@ -5,64 +5,53 @@ import Chat from './Chat';
 import './PrivateScreen.css';
 import { io } from 'socket.io-client';
 
+const socket = io('http://localhost:5000/', {
+	reconnection: true,
+	reconnectionDelay: 1000,
+	reconnectionDelayMax: 5000,
+	reconnectionAttempts: 5,
+});
+
 const PrivateScreen = ({ history }) => {
 	const [error, setError] = useState('');
 	//input for search
-	const [inputUsername, setInputUsername] = useState('');
+	const [inputUsername, setInputUsername] = useState();
 	//usernames to display conversations
-	const [outputUsernames, setOutputUsernames] = useState('');
+	const [outputUsernames, setOutputUsernames] = useState(['']);
 	//input data from sendMessagesHandler
 	const [messageState, setMessageState] = useState({
 		recipientID: '',
 		username: '',
 		message: '',
+		file: '',
 	});
 	//data from fetchMessages
 	const [chat, setChat] = useState([]);
-	//data from fetchPrivateData
-	const [conversationID, setConversationID] = useState('');
-	const [usernameState, setUsernameState] = useState('');
-	const [userID, setUserID] = useState('');
-	const [gifs, setGifs] = useState([]);
-	const [gifSearchInput, setGifSearchInput] = useState('');
-
-	const socket = io('http://localhost:5000/');
+	//reikes naudot po pakeitimu
+	//const [conversationID, setConversationID] = useState('');
 
 	socket.on('askForUserId', () => {
-		socket.emit('userIdReceived', userID);
+		//console.log('askforuserid');
+		socket.emit('userIdReceived', localStorage.getItem('userID'));
 	});
 
-	socket.on('message', ({ username, message }) => {
-		setChat([...chat, { username, message }]);
+	socket.on('messageReceived', ({ username, message, file }) => {
+		console.count();
+		const snd = new Audio(
+			'data:audio/wav;base64,//uQRAAAAWMSLwUIYAAsYkXgoQwAEaYLWfkWgAI0wWs/ItAAAGDgYtAgAyN+QWaAAihwMWm4G8QQRDiMcCBcH3Cc+CDv/7xA4Tvh9Rz/y8QADBwMWgQAZG/ILNAARQ4GLTcDeIIIhxGOBAuD7hOfBB3/94gcJ3w+o5/5eIAIAAAVwWgQAVQ2ORaIQwEMAJiDg95G4nQL7mQVWI6GwRcfsZAcsKkJvxgxEjzFUgfHoSQ9Qq7KNwqHwuB13MA4a1q/DmBrHgPcmjiGoh//EwC5nGPEmS4RcfkVKOhJf+WOgoxJclFz3kgn//dBA+ya1GhurNn8zb//9NNutNuhz31f////9vt///z+IdAEAAAK4LQIAKobHItEIYCGAExBwe8jcToF9zIKrEdDYIuP2MgOWFSE34wYiR5iqQPj0JIeoVdlG4VD4XA67mAcNa1fhzA1jwHuTRxDUQ//iYBczjHiTJcIuPyKlHQkv/LHQUYkuSi57yQT//uggfZNajQ3Vmz+Zt//+mm3Wm3Q576v////+32///5/EOgAAADVghQAAAAA//uQZAUAB1WI0PZugAAAAAoQwAAAEk3nRd2qAAAAACiDgAAAAAAABCqEEQRLCgwpBGMlJkIz8jKhGvj4k6jzRnqasNKIeoh5gI7BJaC1A1AoNBjJgbyApVS4IDlZgDU5WUAxEKDNmmALHzZp0Fkz1FMTmGFl1FMEyodIavcCAUHDWrKAIA4aa2oCgILEBupZgHvAhEBcZ6joQBxS76AgccrFlczBvKLC0QI2cBoCFvfTDAo7eoOQInqDPBtvrDEZBNYN5xwNwxQRfw8ZQ5wQVLvO8OYU+mHvFLlDh05Mdg7BT6YrRPpCBznMB2r//xKJjyyOh+cImr2/4doscwD6neZjuZR4AgAABYAAAABy1xcdQtxYBYYZdifkUDgzzXaXn98Z0oi9ILU5mBjFANmRwlVJ3/6jYDAmxaiDG3/6xjQQCCKkRb/6kg/wW+kSJ5//rLobkLSiKmqP/0ikJuDaSaSf/6JiLYLEYnW/+kXg1WRVJL/9EmQ1YZIsv/6Qzwy5qk7/+tEU0nkls3/zIUMPKNX/6yZLf+kFgAfgGyLFAUwY//uQZAUABcd5UiNPVXAAAApAAAAAE0VZQKw9ISAAACgAAAAAVQIygIElVrFkBS+Jhi+EAuu+lKAkYUEIsmEAEoMeDmCETMvfSHTGkF5RWH7kz/ESHWPAq/kcCRhqBtMdokPdM7vil7RG98A2sc7zO6ZvTdM7pmOUAZTnJW+NXxqmd41dqJ6mLTXxrPpnV8avaIf5SvL7pndPvPpndJR9Kuu8fePvuiuhorgWjp7Mf/PRjxcFCPDkW31srioCExivv9lcwKEaHsf/7ow2Fl1T/9RkXgEhYElAoCLFtMArxwivDJJ+bR1HTKJdlEoTELCIqgEwVGSQ+hIm0NbK8WXcTEI0UPoa2NbG4y2K00JEWbZavJXkYaqo9CRHS55FcZTjKEk3NKoCYUnSQ0rWxrZbFKbKIhOKPZe1cJKzZSaQrIyULHDZmV5K4xySsDRKWOruanGtjLJXFEmwaIbDLX0hIPBUQPVFVkQkDoUNfSoDgQGKPekoxeGzA4DUvnn4bxzcZrtJyipKfPNy5w+9lnXwgqsiyHNeSVpemw4bWb9psYeq//uQZBoABQt4yMVxYAIAAAkQoAAAHvYpL5m6AAgAACXDAAAAD59jblTirQe9upFsmZbpMudy7Lz1X1DYsxOOSWpfPqNX2WqktK0DMvuGwlbNj44TleLPQ+Gsfb+GOWOKJoIrWb3cIMeeON6lz2umTqMXV8Mj30yWPpjoSa9ujK8SyeJP5y5mOW1D6hvLepeveEAEDo0mgCRClOEgANv3B9a6fikgUSu/DmAMATrGx7nng5p5iimPNZsfQLYB2sDLIkzRKZOHGAaUyDcpFBSLG9MCQALgAIgQs2YunOszLSAyQYPVC2YdGGeHD2dTdJk1pAHGAWDjnkcLKFymS3RQZTInzySoBwMG0QueC3gMsCEYxUqlrcxK6k1LQQcsmyYeQPdC2YfuGPASCBkcVMQQqpVJshui1tkXQJQV0OXGAZMXSOEEBRirXbVRQW7ugq7IM7rPWSZyDlM3IuNEkxzCOJ0ny2ThNkyRai1b6ev//3dzNGzNb//4uAvHT5sURcZCFcuKLhOFs8mLAAEAt4UWAAIABAAAAAB4qbHo0tIjVkUU//uQZAwABfSFz3ZqQAAAAAngwAAAE1HjMp2qAAAAACZDgAAAD5UkTE1UgZEUExqYynN1qZvqIOREEFmBcJQkwdxiFtw0qEOkGYfRDifBui9MQg4QAHAqWtAWHoCxu1Yf4VfWLPIM2mHDFsbQEVGwyqQoQcwnfHeIkNt9YnkiaS1oizycqJrx4KOQjahZxWbcZgztj2c49nKmkId44S71j0c8eV9yDK6uPRzx5X18eDvjvQ6yKo9ZSS6l//8elePK/Lf//IInrOF/FvDoADYAGBMGb7FtErm5MXMlmPAJQVgWta7Zx2go+8xJ0UiCb8LHHdftWyLJE0QIAIsI+UbXu67dZMjmgDGCGl1H+vpF4NSDckSIkk7Vd+sxEhBQMRU8j/12UIRhzSaUdQ+rQU5kGeFxm+hb1oh6pWWmv3uvmReDl0UnvtapVaIzo1jZbf/pD6ElLqSX+rUmOQNpJFa/r+sa4e/pBlAABoAAAAA3CUgShLdGIxsY7AUABPRrgCABdDuQ5GC7DqPQCgbbJUAoRSUj+NIEig0YfyWUho1VBBBA//uQZB4ABZx5zfMakeAAAAmwAAAAF5F3P0w9GtAAACfAAAAAwLhMDmAYWMgVEG1U0FIGCBgXBXAtfMH10000EEEEEECUBYln03TTTdNBDZopopYvrTTdNa325mImNg3TTPV9q3pmY0xoO6bv3r00y+IDGid/9aaaZTGMuj9mpu9Mpio1dXrr5HERTZSmqU36A3CumzN/9Robv/Xx4v9ijkSRSNLQhAWumap82WRSBUqXStV/YcS+XVLnSS+WLDroqArFkMEsAS+eWmrUzrO0oEmE40RlMZ5+ODIkAyKAGUwZ3mVKmcamcJnMW26MRPgUw6j+LkhyHGVGYjSUUKNpuJUQoOIAyDvEyG8S5yfK6dhZc0Tx1KI/gviKL6qvvFs1+bWtaz58uUNnryq6kt5RzOCkPWlVqVX2a/EEBUdU1KrXLf40GoiiFXK///qpoiDXrOgqDR38JB0bw7SoL+ZB9o1RCkQjQ2CBYZKd/+VJxZRRZlqSkKiws0WFxUyCwsKiMy7hUVFhIaCrNQsKkTIsLivwKKigsj8XYlwt/WKi2N4d//uQRCSAAjURNIHpMZBGYiaQPSYyAAABLAAAAAAAACWAAAAApUF/Mg+0aohSIRobBAsMlO//Kk4soosy1JSFRYWaLC4qZBYWFRGZdwqKiwkNBVmoWFSJkWFxX4FFRQWR+LsS4W/rFRb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////VEFHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU291bmRib3kuZGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAwNGh0dHA6Ly93d3cuc291bmRib3kuZGUAAAAAAAAAACU='
+		);
+		snd.play();
+
+		setChat([...chat, { username, message, file }]);
+		console.log(chat);
 	});
 
 	useEffect(() => {
 		if (!localStorage.getItem('authToken')) {
 			history.push('/login');
 		}
-
-		const fetchPrivateData = async () => {
-			const config = {
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-				},
-			};
-
-			try {
-				const { data } = await axios.get('/api/private', config);
-				setUsernameState(data.data.username);
-				setConversationID(data.data.conversationIDS);
-				setUserID(data.data._id);
-			} catch (error) {
-				localStorage.removeItem('authToken');
-				setError('You are not authorized please login');
-			}
-		};
-
-		fetchPrivateData();
 	});
-
+	//user search should throw errors if there are missing inputs
 	const userSearchHandler = async (e) => {
 		e.preventDefault();
 
@@ -102,13 +91,14 @@ const PrivateScreen = ({ history }) => {
 			const { data } = await axios({
 				method: 'post',
 				url: '/api/private/getrecipients',
-				data: { conversationID },
+				data: {}, //Cia turi atsirast conversationID is room name paspaudimo
 				headers: config.headers,
 			});
 			setMessageState({ recipientID: data.data });
 			console.log(messageState);
 		} catch (error) {
 			console.log(error);
+			setError(error.response.data.error);
 		}
 	};
 
@@ -123,18 +113,19 @@ const PrivateScreen = ({ history }) => {
 			const { data } = await axios({
 				method: 'post',
 				url: '/api/private/getusernames',
-				data: { conversationID },
+				data: {}, //Cia turi atsirast conversationID is room name paspaudimo
 				headers: config.headers,
 			});
 			console.log(data.data);
 		} catch (error) {
 			console.log(error);
+			setError(error.response.data.error);
 		}
 	};
 
 	const fetchMessages = async (e) => {
 		//e.preventDefault();
-
+		setChat([]);
 		const config = {
 			headers: {
 				'Content-Type': 'application/json',
@@ -146,77 +137,81 @@ const PrivateScreen = ({ history }) => {
 			const { data } = await axios({
 				method: 'post',
 				url: '/api/private/getmessages',
-				data: { conversationID },
+				data: { conversationID: localStorage.getItem('conversationIDS') }, //Cia turi atsirast conversationID is room name paspaudimo
 				headers: config.headers,
 			});
 
 			console.log(data);
-			setChat([]);
-			console.log(data.data.length);
 
+			let messageUsernameArray = [];
 			for (let i = 0; i < data.data.length; i++) {
 				let username = data.data[i].fromUsername;
 				let message = data.data[i].body;
-				console.log(message);
-				setChat([...chat, { username, message }]);
+				let file = data.data[i].file;
+				messageUsernameArray.push({ username, message, file });
 			}
-			console.log(chat);
+			setChat(messageUsernameArray);
 		} catch (error) {
 			console.log(error);
-			//setError(error.response.data.error);
 		}
 	};
 
 	const sendMessagesHandler = async (e) => {
-		const { username, message } = messageState;
+		e.preventDefault();
+		const { username, message, file } = messageState;
 		const recipientID = '607710a96b5ccc0ee4a70309';
-		/*const config = {
+
+		const config = {
 			header: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${localStorage.getItem('authToken')}`,
 			},
 		};
 		try {
-			console.log(conversationID);
-			console.log(username);
-			console.log(message);
 			const { data } = await axios({
 				method: 'post',
 				url: '/api/private/postmessage',
 				data: {
-					conversationID,
-					from: userID,
+					conversationID: localStorage.getItem('conversationIDS'), //Cia turi atsirast conversationID is room name paspaudimo
+					from: localStorage.getItem('userID'),
 					fromUsername: username,
 					body: message,
+					file: file,
 				},
 				headers: config.header,
 			});
 			console.log(data);
 		} catch (error) {
-			console.log(error);
-			//setError(error.response.data.error);
-		}*/
+			setError(error.response.data.error);
+		}
 
-		socket.emit('message', { recipientID: userID, username, message });
-		socket.emit('message', { recipientID, username, message });
-		console.log(recipientID);
-		console.log(username);
-		console.log(message);
-		e.preventDefault();
-		setMessageState({ message: '', username });
+		//Pacio userio zinute reiktu pridet per fronta, o ne per socket requesta
+		// console.log(localStorage.getItem('userID'));
+		// console.log(message);
+
+		setChat([...chat, { username, message, file }]);
+
+		socket.emit('message', { recipientID, username, message, file });
+
+		//e.preventDefault();
+		setMessageState({ message: '', username, file: '' });
 	};
 
 	const onTextChange = (e) => {
-		setMessageState({ ...messageState, username: usernameState, message: e });
+		setMessageState({
+			...messageState,
+			username: localStorage.getItem('username'),
+			message: e,
+		});
 	};
 
 	const logoutHandler = () => {
 		localStorage.removeItem('authToken');
+		localStorage.removeItem('username');
+		localStorage.removeItem('conversationIDS');
+		localStorage.removeItem('userID');
+
 		history.push('/login');
-		setUsernameState('');
-		setUserID('');
-		console.log(usernameState);
-		console.log(userID);
 	};
 
 	const fetchTrendingGifs = async () => {
@@ -268,15 +263,19 @@ const PrivateScreen = ({ history }) => {
 						inputUsername={inputUsername}
 						setInputUsername={setInputUsername}
 						outputUsernames={outputUsernames}
-						usernameState={usernameState}
+						usernameState={localStorage.getItem('username')}
 					/>
 
 					<Chat
+						messageState={messageState}
+						usernameState={localStorage.getItem('username')}
+						setMessageState={setMessageState}
 						input={messageState}
 						onTextChange={onTextChange}
 						sendMessage={sendMessagesHandler}
 						messages={chat}
-						username={usernameState}
+						username={localStorage.getItem('username')}
+						errorState={setError}
 					/>
 				</div>
 			</div>

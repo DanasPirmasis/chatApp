@@ -64,6 +64,7 @@ const RegisterScreen = ({ history }) => {
 						placeholder="Enter username"
 						value={username}
 						onChange={(e) => setUsername(e.target.value)}
+						maxLength={20}
 					/>
 				</div>
 				<div className="form-group">
@@ -75,6 +76,7 @@ const RegisterScreen = ({ history }) => {
 						placeholder="Email address"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
+						maxLength={64}
 					/>
 				</div>
 				<div className="form-group">
@@ -87,6 +89,7 @@ const RegisterScreen = ({ history }) => {
 						placeholder="Enter password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
+						maxLength={32}
 					/>
 				</div>
 				<div className="form-group">
@@ -99,6 +102,7 @@ const RegisterScreen = ({ history }) => {
 						placeholder="Confirm password"
 						value={confirmpassword}
 						onChange={(e) => setConfirmPassword(e.target.value)}
+						maxLength={32}
 					/>
 				</div>
 				<button type="submit" className="btn btn-primary">
