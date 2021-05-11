@@ -1,5 +1,6 @@
 import { Card, CardContent, Typography } from '@material-ui/core';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import axios from 'axios';
 import EditIcon from '@material-ui/icons/Edit';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -24,17 +25,37 @@ function Message({ message, username }) {
 		return 'Something went wrong Message.js';
 	};
 
-	const openEditText = (info) => {
+	const openEditText = () => {
 		setEdit(edit ? false : true);
-		//console.log(info)
 	};
+
 	const editText = (info) => {
-		console.log(info);
-		console.log(input);
 		if (input !== '') {
 			message.message = input;
+			updateMessage(message.messageID, input);
 		}
+
 		setEdit(false);
+	};
+
+	const updateMessage = async (messageID, editedText) => {
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+			},
+		};
+		try {
+			const { data } = await axios({
+				method: 'post',
+				url: '/api/private/editmessage',
+				data: { messageID, editedText },
+				headers: config.headers,
+			});
+			console.log(data);
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	const addEditButtonOnHover = () => {
@@ -43,7 +64,7 @@ function Message({ message, username }) {
 				<EditIcon
 					fontSize="small"
 					style={style}
-					onClick={() => openEditText(message.message)}
+					onClick={() => openEditText()}
 				></EditIcon>
 			);
 		}
@@ -66,10 +87,7 @@ function Message({ message, username }) {
 									placeholder={message.message}
 									onChange={(e) => setInput(e.target.value)}
 								></input>
-								<CheckIcon
-									fontSize="small"
-									onClick={() => editText(message.message)}
-								>
+								<CheckIcon fontSize="small" onClick={() => editText(message)}>
 									Change
 								</CheckIcon>
 								<ClearIcon

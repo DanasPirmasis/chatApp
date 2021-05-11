@@ -7,6 +7,7 @@ const {
 	newConversation,
 	getMessages,
 	postMessage,
+	editMessage,
 	getConversationRecipientUsernames,
 	getConversationRecipientIDS,
 } = require('../controllers/private');
@@ -18,5 +19,6 @@ router.route('/getmessages').post(protect, getMessages);
 router.route('/postmessage').post(protect, postMessage);
 router.route('/getusernames').post(protect, getConversationRecipientUsernames);
 router.route('/getrecipients').post(protect, getConversationRecipientIDS);
+router.route('/editmessage').post(protect, editMessage);
 
 module.exports = router;

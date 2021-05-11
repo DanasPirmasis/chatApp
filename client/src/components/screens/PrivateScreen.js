@@ -23,6 +23,7 @@ const PrivateScreen = ({ history }) => {
 		recipientID: '',
 		username: '',
 		message: '',
+		messageID: '',
 		file: '',
 	});
 	//data from fetchMessages
@@ -148,7 +149,8 @@ const PrivateScreen = ({ history }) => {
 				let username = data.data[i].fromUsername;
 				let message = data.data[i].body;
 				let file = data.data[i].file;
-				messageUsernameArray.push({ username, message, file });
+				let messageID = data.data[i]._id;
+				messageUsernameArray.push({ username, message, file, messageID });
 			}
 			setChat(messageUsernameArray);
 		} catch (error) {
@@ -180,17 +182,16 @@ const PrivateScreen = ({ history }) => {
 				},
 				headers: config.header,
 			});
-			console.log(data);
+
+			setChat([...chat, { username, message, file, messageID: data.data }]);
 		} catch (error) {
 			setError(error.response.data.error);
 		}
 
-		setChat([...chat, { username, message, file }]);
-
 		socket.emit('message', { recipientID, username, message, file });
 
 		//e.preventDefault();
-		setMessageState({ message: '', username, file: '' });
+		setMessageState({ message: '', username, file: '', messageID: '' });
 	};
 
 	const onTextChange = (e) => {

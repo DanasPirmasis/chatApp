@@ -93,7 +93,6 @@ function Chat({
 				{messages
 					.filter((val) => {
 						if (search === '') {
-							console.log('search is empty');
 							return val;
 						} else if (
 							val.message.toLowerCase().includes(search.toLowerCase())
@@ -102,7 +101,11 @@ function Chat({
 						}
 					})
 					.map((message) => (
-						<Message key={uuid()} username={username} message={message}></Message>
+						<Message
+							key={uuid()}
+							username={username}
+							message={message}
+						></Message>
 					))}
 			</div>
 
