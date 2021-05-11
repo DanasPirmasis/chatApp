@@ -4,6 +4,7 @@ import './Chat.css';
 import Picker from 'emoji-picker-react';
 import Modal from 'react-modal';
 import Gif from './Gif';
+import uuid from 'react-uuid';
 import {
 	Button,
 	FormControl,
@@ -101,7 +102,7 @@ function Chat({
 						}
 					})
 					.map((message) => (
-						<Message username={username} message={message}></Message>
+						<Message key={uuid()} username={username} message={message}></Message>
 					))}
 			</div>
 
