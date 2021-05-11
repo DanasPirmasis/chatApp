@@ -214,39 +214,6 @@ const PrivateScreen = ({ history }) => {
 		history.push('/login');
 	};
 
-	const fetchTrendingGifs = async () => {
-		try {
-			const results = await axios('https://api.giphy.com/v1/gifs/trending', {
-				params: {
-					api_key: 'I5XMaxwkeLXutKY7m3RCH8y6wk8ktn7N',
-					limit: 8,
-				},
-			});
-
-			console.log(results);
-			setGifs(results.data.data);
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	const gifSearchHandler = async (e) => {
-		e.preventDefault();
-
-		try {
-			const results = await axios('https://api.giphy.com/v1/gifs/search', {
-				params: {
-					api_key: 'I5XMaxwkeLXutKY7m3RCH8y6wk8ktn7N',
-					q: gifSearchInput,
-					limit: 8,
-				},
-			});
-			setGifs(results.data.data);
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
 	return error ? (
 		<span className="error-message">{error}</span>
 	) : (
