@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './Chat.css';
 import Picker from 'emoji-picker-react';
 import Modal from 'react-modal';
@@ -99,6 +99,7 @@ function Chat({
 						) {
 							return val;
 						}
+						return null;
 					})
 					.map((message) => (
 						<Message
