@@ -1,42 +1,136 @@
 import { Card, CardContent, Typography } from '@material-ui/core';
-import { useState, useEffect } from 'react'; 
+import { useState } from 'react';
+import axios from 'axios';
+import EditIcon from '@material-ui/icons/Edit';
+import CheckIcon from '@material-ui/icons/Check';
+import ClearIcon from '@material-ui/icons/Clear';
 import React from 'react';
 import './Message.css';
 
 function Message({ message, username }) {
 	const [edit, setEdit] = useState(false);
 	const [input, setInput] = useState('');
+	const [style, setStyle] = useState({ display: 'none' });
 	const isUser = username === message.username;
+	const imageFileTypes = ['image/png', 'image/jpeg', 'image/gif'];
 
 	const textToDisplay = () => {
+		//console.log(message);
 		if (message.file === '') {
 			if (message.message.includes('giphy')) {
 				return <img src={message.message} alt={''} />;
 			}
 			return message.username + ' : ' + message.message;
-		} else if (message.message === '' && message.file !== undefined) {
+		} else if (
+			(message.message === '' || message.message === undefined) &&
+			message.file !== undefined &&
+			imageFileTypes.includes(message.fileType)
+		) {
 			return <img src={`${message.file}`} alt={''} />;
+		} else if (
+			(message.message === '' || message.message === undefined) &&
+			message.file !== undefined
+		) {
+			return (
+				<button
+					className={'button'}
+					onClick={() => {
+						downloadFile(message.file, message.fileName);
+					}}
+				>
+					{message.fileName}
+				</button>
+			);
 		}
 		return 'Something went wrong Message.js';
 	};
 
-	const openEditText =(info) =>{
-		setEdit(edit ?false: true)
-		//console.log(info)
+	function downloadFile(file, fileName) {
+		let a = document.createElement('a');
+		a.href = file;
+		a.download = fileName;
+		a.click();
 	}
-	const editText =(info) =>{
-		console.log(info)
-		message.message=input;
-		setEdit(false)
-	}
+
+	const openEditText = () => {
+		setEdit(edit ? false : true);
+	};
+
+	const editText = (info) => {
+		if (input !== '') {
+			message.message = input;
+			updateMessage(message.messageID, input);
+		}
+
+		setEdit(false);
+	};
+
+	const updateMessage = async (messageID, editedText) => {
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+			},
+		};
+		try {
+			const { data } = await axios({
+				method: 'post',
+				url: '/api/private/editmessage',
+				data: { messageID, editedText },
+				headers: config.headers,
+			});
+			console.log(data);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const addEditButtonOnHover = () => {
+		if (isUser) {
+			return (
+				<EditIcon
+					fontSize="small"
+					style={style}
+					onClick={() => openEditText()}
+				></EditIcon>
+			);
+		}
+	};
 
 	return (
 		<div className={`message ${isUser && 'message_user'}`}>
-			{isUser ? <button onClick={() => openEditText(message.message)}>Edit</button> : <></>}
 			<Card className={isUser ? 'message__userCard' : 'message__guestCard'}>
 				<CardContent>
 					<Typography color="initial" varinat="h5" component="h2">
-						{edit ? <div> <input placeholder={message.message} onChange={(e) =>setInput(e.target.value)}></input> <button onClick={() => editText(message.message)}>Change</button> </div> : textToDisplay()}
+						{edit ? (
+							<div
+								style={{
+									display: 'flex',
+									alignItems: 'center',
+									flexWrap: 'wrap',
+								}}
+							>
+								<input
+									placeholder={message.message}
+									onChange={(e) => setInput(e.target.value)}
+								></input>
+								<CheckIcon fontSize="small" onClick={() => editText(message)}>
+									Change
+								</CheckIcon>
+								<ClearIcon
+									fontSize="small"
+									onClick={() => setEdit(false)}
+								></ClearIcon>
+							</div>
+						) : (
+							<div
+								onMouseEnter={(e) => setStyle({ display: 'block' })}
+								onMouseLeave={(e) => setStyle({ display: 'none' })}
+							>
+								{addEditButtonOnHover()}
+								<div>{textToDisplay()}</div>
+							</div>
+						)}
 					</Typography>
 				</CardContent>
 			</Card>

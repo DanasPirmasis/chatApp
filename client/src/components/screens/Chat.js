@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './Chat.css';
 import Picker from 'emoji-picker-react';
 import Modal from 'react-modal';
@@ -59,7 +59,12 @@ function Chat({
 
 		const file = await toBase64(e.target.files[0]);
 		console.log(file);
-		setMessageState({ username: usernameState, file: file });
+		setMessageState({
+			username: usernameState,
+			file: file,
+			fileType: e.target.files[0].type,
+			fileName: e.target.files[0].name,
+		});
 		console.log(messageState);
 	};
 
@@ -93,16 +98,20 @@ function Chat({
 				{messages
 					.filter((val) => {
 						if (search === '') {
-							console.log('search is empty');
 							return val;
 						} else if (
 							val.message.toLowerCase().includes(search.toLowerCase())
 						) {
 							return val;
 						}
+						return null;
 					})
 					.map((message) => (
-						<Message key={uuid()} username={username} message={message}></Message>
+						<Message
+							key={uuid()}
+							username={username}
+							message={message}
+						></Message>
 					))}
 			</div>
 

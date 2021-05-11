@@ -23,7 +23,10 @@ const PrivateScreen = ({ history }) => {
 		recipientID: '',
 		username: '',
 		message: '',
+		messageID: '',
 		file: '',
+		fileType: '',
+		fileName: '',
 	});
 	//data from fetchMessages
 	const [chat, setChat] = useState([]);
@@ -148,7 +151,17 @@ const PrivateScreen = ({ history }) => {
 				let username = data.data[i].fromUsername;
 				let message = data.data[i].body;
 				let file = data.data[i].file;
-				messageUsernameArray.push({ username, message, file });
+				let fileType = data.data[i].fileType;
+				let fileName = data.data[i].fileName;
+				let messageID = data.data[i]._id;
+				messageUsernameArray.push({
+					username,
+					message,
+					file,
+					messageID,
+					fileType,
+					fileName,
+				});
 			}
 			setChat(messageUsernameArray);
 		} catch (error) {
@@ -158,7 +171,7 @@ const PrivateScreen = ({ history }) => {
 
 	const sendMessagesHandler = async (e) => {
 		e.preventDefault();
-		const { username, message, file } = messageState;
+		const { username, message, file, fileType, fileName } = messageState;
 		const recipientID = '607710a96b5ccc0ee4a70309';
 
 		const config = {
@@ -177,24 +190,30 @@ const PrivateScreen = ({ history }) => {
 					fromUsername: username,
 					body: message,
 					file: file,
+					fileName: fileName,
 				},
 				headers: config.header,
 			});
-			console.log(data);
+
+			setChat([
+				...chat,
+				{ username, message, file, fileType, fileName, messageID: data.data },
+			]);
 		} catch (error) {
 			setError(error.response.data.error);
 		}
-
-		//Pacio userio zinute reiktu pridet per fronta, o ne per socket requesta
-		// console.log(localStorage.getItem('userID'));
-		// console.log(message);
-
-		setChat([...chat, { username, message, file }]);
-
+		//Probably should send messageState instead of variables!!!
 		socket.emit('message', { recipientID, username, message, file });
 
 		//e.preventDefault();
-		setMessageState({ message: '', username, file: '' });
+		setMessageState({
+			message: '',
+			username,
+			file: '',
+			messageID: '',
+			fileName: '',
+			fileType: '',
+		});
 	};
 
 	const onTextChange = (e) => {
@@ -212,39 +231,6 @@ const PrivateScreen = ({ history }) => {
 		localStorage.removeItem('userID');
 
 		history.push('/login');
-	};
-
-	const fetchTrendingGifs = async () => {
-		try {
-			const results = await axios('https://api.giphy.com/v1/gifs/trending', {
-				params: {
-					api_key: 'I5XMaxwkeLXutKY7m3RCH8y6wk8ktn7N',
-					limit: 8,
-				},
-			});
-
-			console.log(results);
-			setGifs(results.data.data);
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	const gifSearchHandler = async (e) => {
-		e.preventDefault();
-
-		try {
-			const results = await axios('https://api.giphy.com/v1/gifs/search', {
-				params: {
-					api_key: 'I5XMaxwkeLXutKY7m3RCH8y6wk8ktn7N',
-					q: gifSearchInput,
-					limit: 8,
-				},
-			});
-			setGifs(results.data.data);
-		} catch (err) {
-			console.log(err);
-		}
 	};
 
 	return error ? (

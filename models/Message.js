@@ -21,6 +21,12 @@ const MessageSchema = new mongoose.Schema({
 		},
 		maxLength: [640, 'Message is too long'],
 	},
+	fileName: {
+		type: String,
+		required: function () {
+			return this.file != null;
+		},
+	},
 	file: {
 		type: String,
 	},
