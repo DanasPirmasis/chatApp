@@ -160,8 +160,7 @@ exports.postMessage = async (req, res, next) => {
 exports.editMessage = async (req, res, next) => {
 	const messageID = sanitize(req.body.messageID);
 	const editedText = sanitize(req.body.editedText);
-	console.log(messageID);
-	console.log(editedText);
+
 	try {
 		const message = await Message.findByIdAndUpdate(messageID, {
 			body: editedText,
