@@ -52,7 +52,14 @@ const PrivateScreen = ({ history }) => {
 		if (!localStorage.getItem('authToken')) {
 			history.push('/login');
 		}
-	});
+		if (error.includes('Unauthorized to access this route')) {
+			localStorage.removeItem('authToken');
+			localStorage.removeItem('username');
+			localStorage.removeItem('conversationIDS');
+			localStorage.removeItem('userID');
+			history.push('/login');
+		}
+	}, [error, history]);
 	//user search should throw errors if there are missing inputs
 	const userSearchHandler = async (e) => {
 		e.preventDefault();
@@ -74,11 +81,9 @@ const PrivateScreen = ({ history }) => {
 			console.log(data);
 			setOutputUsernames(data.data);
 			console.log(data.data);
-
-			//history.push('/searchusers');
 		} catch (error) {
 			console.log(error);
-			//setError(error.response.data.error);
+			setError(error.response.data.error);
 		}
 	};
 
@@ -165,6 +170,7 @@ const PrivateScreen = ({ history }) => {
 			setChat(messageUsernameArray);
 		} catch (error) {
 			console.log(error);
+			setError(error.response.data.error);
 		}
 	};
 
