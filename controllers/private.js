@@ -140,6 +140,7 @@ exports.postMessage = async (req, res, next) => {
 				fromUsername: fromUsername,
 				file: file,
 				fileType: 'empty',
+				fileName: '-',
 				body: body,
 			});
 			res.status(200).json({
