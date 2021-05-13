@@ -13,6 +13,7 @@ function Message({ message, username, color }) {
 	const [style, setStyle] = useState({ display: 'none' });
 	const isUser = username === message.username;
 	const imageFileTypes = ['image/png', 'image/jpeg', 'image/gif'];
+	const audioFileTypes = ['audio/mpeg', 'audio/wav', 'audio/aac'];
 
 	const textToDisplay = () => {
 		//console.log(message);
@@ -27,6 +28,12 @@ function Message({ message, username, color }) {
 			imageFileTypes.includes(message.fileType)
 		) {
 			return <img src={`${message.file}`} alt={''} />;
+		} else if (
+			(message.message === '' || message.message === undefined) &&
+			message.file !== undefined &&
+			audioFileTypes.includes(message.fileType)
+		) {
+			return <audio src={message.file} controls />;
 		} else if (
 			(message.message === '' || message.message === undefined) &&
 			message.file !== undefined
@@ -86,7 +93,11 @@ function Message({ message, username, color }) {
 	};
 
 	const addEditButtonOnHover = () => {
-		if (isUser) {
+		if (
+			isUser &&
+			message.file.length < 1 &&
+			!message.message.includes('giphy')
+		) {
 			return (
 				<EditIcon
 					fontSize="small"
@@ -99,7 +110,10 @@ function Message({ message, username, color }) {
 
 	return (
 		<div className={`message ${isUser && 'message_user'}`}>
-			<Card className={isUser ? 'message__userCard' : 'message__guestCard'}  style={{backgroundColor:color}} >
+			<Card
+				className={isUser ? 'message__userCard' : 'message__guestCard'}
+				style={{ backgroundColor: color }}
+			>
 				<CardContent>
 					<Typography color="initial" varinat="h5" component="h2">
 						{edit ? (

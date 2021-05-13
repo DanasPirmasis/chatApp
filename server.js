@@ -43,14 +43,26 @@ io.on('connection', (socket) => {
 		sessionsMap[userId] = socket.id;
 	});
 
-	socket.on('message', ({ recipientID, username, message, file }) => {
-		console.log(sessionsMap);
-		const socketID = sessionsMap[recipientID];
-		socket.to(socketID).emit('messageReceived', { username, message, file });
-		// console.log(socketID);
-		console.log(recipientID);
-		console.log(message);
-	});
+	socket.on(
+		'message',
+		({ recipientID, username, message, file, fileType, fileName }) => {
+			console.log(sessionsMap);
+			console.log(file);
+			console.log(fileType);
+			console.log(fileName);
+			const socketID = sessionsMap[recipientID];
+			socket.to(socketID).emit('messageReceived', {
+				username,
+				message,
+				file,
+				fileType,
+				fileName,
+			});
+			// console.log(socketID);
+			console.log(recipientID);
+			console.log(message);
+		}
+	);
 });
 
 process.on('unhandledRejection', (err, promise) => {

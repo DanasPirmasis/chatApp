@@ -57,22 +57,24 @@ function Chat({
 		setFileModalOpen(false);
 	};
 
-	const audioMessageHandler = async (e, mediaBlobUrl) => {
+	const audioMessageHandler = async (mediaBlobUrl) => {
+		console.log(mediaBlobUrl);
 		let blob = await fetch(mediaBlobUrl).then((r) => r.blob());
 		if (blob.size > 16000000) {
 			errorState('Voice message is too long');
 			return;
 		}
-
 		const file = await toBase64(blob);
-		console.log(file);
+
 		setMessageState({
 			username: usernameState,
 			file: file,
 			fileType: 'audio/wav',
 			fileName: 'Audio message',
 		});
-		setTimeout(500);
+	};
+
+	const audioModalSendHandler = (e) => {
 		sendMessage(e);
 		setRecordingModalOpen(false);
 	};
@@ -176,13 +178,17 @@ function Chat({
 								<button onClick={stopRecording}>Stop Recording</button>
 								<button
 									onClick={(e) => {
-										audioMessageHandler(e, mediaBlobUrl);
+										audioModalSendHandler(e);
 									}}
 								>
 									Send message
 								</button>
+								<audio src={mediaBlobUrl} controls />
 							</div>
 						)}
+						onStop={(mediaBlobUrl) => {
+							audioMessageHandler(mediaBlobUrl);
+						}}
 					/>
 				</Modal>
 
