@@ -5,6 +5,7 @@ import Picker from 'emoji-picker-react';
 import Modal from 'react-modal';
 import Gif from './Gif';
 import uuid from 'react-uuid';
+import { ChromePicker  } from 'react-color';
 import {
 	Button,
 	FormControl,
@@ -16,6 +17,7 @@ import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
 import GifIcon from '@material-ui/icons/Gif';
 import AttachmentIcon from '@material-ui/icons/Attachment';
 import MicIcon from '@material-ui/icons/Mic';
+import ColorLensIcon from '@material-ui/icons/ColorLens';
 import { ReactMediaRecorder } from "react-media-recorder";
 import Message from './Message';
 
@@ -30,10 +32,14 @@ function Chat({
 	messageState,
 	errorState,
 }) {
+	//open and close modals
 	const [emojiModalOpen, setEmojiModalOpen] = useState(false);
 	const [gifModalOpen, setGifModalOpen] = useState(false);
 	const [fileModalOpen, setFileModalOpen] = useState(false);
 	const [recordingModalOpen, setRecordingModalOpen] = useState(false);
+	const [colorPiker, setColorPiker] = useState(false);
+
+	const [color, setColor] = useState('#5967b8');
 	const [search, setSearch] = useState('');
 
 	const [chosenEmoji, setChosenEmoji] = useState('');
@@ -115,8 +121,19 @@ function Chat({
 							key={uuid()}
 							username={username}
 							message={message}
+							color = {color}
 						></Message>
 					))}
+					{colorPiker && <div className="pickcolor">
+						<ChromePicker
+							color = {color}
+							onChange={updatedColor => setColor(updatedColor.hex)}
+						/>
+						</div>}
+
+					{emojiModalOpen && <div className="emojipiker">
+					<Picker isOpen={emojiModalOpen} onEmojiClick={onEmojiClick} />
+						</div>}
 			</div>
 
 			<div className="chat__footer">
@@ -126,14 +143,16 @@ function Chat({
 					onRequestClose={() => setRecordingModalOpen(false)}>
 
 					<ReactMediaRecorder
-						video
+						audio
 						render={({ status, startRecording, stopRecording, mediaBlobUrl }) => (
 							<div>
 							<button onClick={startRecording}>Start Recording</button>
 							<button onClick={stopRecording}>Stop Recording</button>
-							<audio src={mediaBlobUrl} controls autoplay loop />
+							<audio src={mediaBlobUrl} controls autoPlay />
 							</div>
+							
 						)}
+						
 						/>
 
 					</Modal>
@@ -165,15 +184,8 @@ function Chat({
 						messageState={messageState}
 					/>
 				</Modal>
-
-				<InsertEmoticonIcon onClick={() => setEmojiModalOpen(true)} />
-				<Modal
-					size="sm"
-					isOpen={emojiModalOpen}
-					onRequestClose={() => setEmojiModalOpen(false)}
-				>
-					<Picker isOpen={emojiModalOpen} onEmojiClick={onEmojiClick} />
-				</Modal>
+				<InsertEmoticonIcon onClick={() => setEmojiModalOpen(emojiModalOpen => !emojiModalOpen)} />
+				
 
 				<form className="chat__footerForm">
 					<FormControl fullWidth>
@@ -194,6 +206,9 @@ function Chat({
 						</Button>
 					</FormControl>
 				</form>
+						
+				<ColorLensIcon onClick={() => setColorPiker(colorPiker => !colorPiker)}/>
+				
 			</div>
 		</div>
 	);
