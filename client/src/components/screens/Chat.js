@@ -15,6 +15,8 @@ import {
 import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
 import GifIcon from '@material-ui/icons/Gif';
 import AttachmentIcon from '@material-ui/icons/Attachment';
+import MicIcon from '@material-ui/icons/Mic';
+import { ReactMediaRecorder } from "react-media-recorder";
 import Message from './Message';
 
 function Chat({
@@ -31,7 +33,7 @@ function Chat({
 	const [emojiModalOpen, setEmojiModalOpen] = useState(false);
 	const [gifModalOpen, setGifModalOpen] = useState(false);
 	const [fileModalOpen, setFileModalOpen] = useState(false);
-	const [showGif, setShowGif] = useState(null);
+	const [recordingModalOpen, setRecordingModalOpen] = useState(false);
 	const [search, setSearch] = useState('');
 
 	const [chosenEmoji, setChosenEmoji] = useState('');
@@ -48,6 +50,8 @@ function Chat({
 		sendMessage(e);
 		setFileModalOpen(false);
 	};
+
+
 
 	const fileHandler = async (e) => {
 		console.log(e.target.files[0]);
@@ -116,6 +120,24 @@ function Chat({
 			</div>
 
 			<div className="chat__footer">
+				<MicIcon onClick={() => setRecordingModalOpen(true)} />
+				<Modal
+					isOpen={recordingModalOpen}
+					onRequestClose={() => setRecordingModalOpen(false)}>
+
+					<ReactMediaRecorder
+						video
+						render={({ status, startRecording, stopRecording, mediaBlobUrl }) => (
+							<div>
+							<button onClick={startRecording}>Start Recording</button>
+							<button onClick={stopRecording}>Stop Recording</button>
+							<audio src={mediaBlobUrl} controls autoplay loop />
+							</div>
+						)}
+						/>
+
+					</Modal>
+
 				<AttachmentIcon onClick={() => setFileModalOpen(true)} />
 				<Modal
 					isOpen={fileModalOpen}
@@ -138,7 +160,6 @@ function Chat({
 				>
 					<Gif
 						setGifModalOpen={setGifModalOpen}
-						setShowGif={setShowGif}
 						setMessageState={setMessageState}
 						usernameState={usernameState}
 						messageState={messageState}
@@ -153,6 +174,7 @@ function Chat({
 				>
 					<Picker isOpen={emojiModalOpen} onEmojiClick={onEmojiClick} />
 				</Modal>
+
 				<form className="chat__footerForm">
 					<FormControl fullWidth>
 						<InputLabel>Enter a message</InputLabel>
