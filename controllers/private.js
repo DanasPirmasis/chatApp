@@ -15,6 +15,8 @@ const acceptedFileTypes = [
 	'text/html',
 	'text/javascript',
 	'audio/mpeg',
+	'audio/wav',
+	'audio/aac',
 	'video/mp4',
 	'application/pdf',
 	'application/vnd.ms-powerpoint',

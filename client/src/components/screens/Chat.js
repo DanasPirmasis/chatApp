@@ -16,7 +16,7 @@ import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
 import GifIcon from '@material-ui/icons/Gif';
 import AttachmentIcon from '@material-ui/icons/Attachment';
 import MicIcon from '@material-ui/icons/Mic';
-import { ReactMediaRecorder } from "react-media-recorder";
+import { ReactMediaRecorder } from 'react-media-recorder';
 import Message from './Message';
 
 function Chat({
@@ -51,7 +51,25 @@ function Chat({
 		setFileModalOpen(false);
 	};
 
+	const audioMessageHandler = async (e, mediaBlobUrl) => {
+		let blob = await fetch(mediaBlobUrl).then((r) => r.blob());
+		if (blob.size > 16000000) {
+			errorState('Voice message is too long');
+			return;
+		}
 
+		const file = await toBase64(blob);
+		console.log(file);
+		setMessageState({
+			username: usernameState,
+			file: file,
+			fileType: 'audio/wav',
+			fileName: 'Audio message',
+		});
+		setTimeout(500);
+		sendMessage(e);
+		setRecordingModalOpen(false);
+	};
 
 	const fileHandler = async (e) => {
 		console.log(e.target.files[0]);
@@ -69,7 +87,6 @@ function Chat({
 			fileType: e.target.files[0].type,
 			fileName: e.target.files[0].name,
 		});
-		console.log(messageState);
 	};
 
 	const toBase64 = async (file) =>
@@ -123,20 +140,30 @@ function Chat({
 				<MicIcon onClick={() => setRecordingModalOpen(true)} />
 				<Modal
 					isOpen={recordingModalOpen}
-					onRequestClose={() => setRecordingModalOpen(false)}>
-
+					onRequestClose={() => setRecordingModalOpen(false)}
+				>
 					<ReactMediaRecorder
-						video
-						render={({ status, startRecording, stopRecording, mediaBlobUrl }) => (
+						audio
+						render={({
+							status,
+							startRecording,
+							stopRecording,
+							mediaBlobUrl,
+						}) => (
 							<div>
-							<button onClick={startRecording}>Start Recording</button>
-							<button onClick={stopRecording}>Stop Recording</button>
-							<audio src={mediaBlobUrl} controls autoplay loop />
+								<button onClick={startRecording}>Start Recording</button>
+								<button onClick={stopRecording}>Stop Recording</button>
+								<button
+									onClick={(e) => {
+										audioMessageHandler(e, mediaBlobUrl);
+									}}
+								>
+									Send message
+								</button>
 							</div>
 						)}
-						/>
-
-					</Modal>
+					/>
+				</Modal>
 
 				<AttachmentIcon onClick={() => setFileModalOpen(true)} />
 				<Modal
