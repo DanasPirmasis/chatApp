@@ -22,11 +22,11 @@ function SidebarChat({
 	const renderUsers = () => {};
 
 	return !addNewChat ? (
-		userSelect !== '' ? (
+		userSelect.name !== '' ? (
 			<div className="sidebarChat">
 				<Avatar />
 				<div className="sidebarChat__info">
-					<h3>Room with {userSelect}</h3>
+					<h3>Room with {userSelect.name}</h3>
 					<p>Last message...</p>
 				</div>
 			</div>
@@ -47,9 +47,9 @@ function SidebarChat({
 					<button type="submit">New Message</button>
 				</form>
 
-				{outputUsernames.map((el) => (
+				{outputUsernames.map((el, inx) => (
 					<div
-						onClick={() => setuserSelect(el)}
+						onClick={() => setuserSelect({name:el, index:inx})}
 						className="user__names"
 						key={el}
 					>
@@ -57,7 +57,7 @@ function SidebarChat({
 					</div>
 				))}
 
-				{console.log(userSelect)}
+			{console.log(userSelect)}
 
 				<br />
 				<button onClick={() => setModalOpen(false)}>Close</button>

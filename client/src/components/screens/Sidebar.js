@@ -10,8 +10,10 @@ function Sidebar({
 	setInputUsername,
 	outputUsernames,
 	usernameState,
+	findId,
+	setAddId
 }) {
-	const [userSelect, setuserSelect] = useState('');
+	const [userSelect, setuserSelect] = useState({name:'', index:''});
 
 	return (
 		<div className="sidebar">
@@ -23,6 +25,8 @@ function Sidebar({
 			<div className="sidebar__serch">{/* serchas */}</div>
 
 			<div className="sidebar__chats">
+			{/*setAddId(findId[userSelect.index])*/}
+
 				<SidebarChat
 					addNewChat
 					userSearchHandler={userSearchHandler}
