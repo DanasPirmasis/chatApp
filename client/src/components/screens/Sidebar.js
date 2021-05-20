@@ -25,7 +25,7 @@ function Sidebar({
 			<div className="sidebar__serch">{/* serchas */}</div>
 
 			<div className="sidebar__chats">
-			{/*setAddId(findId[userSelect.index])*/}
+			{setAddId(findId[userSelect.index])}
 
 				<SidebarChat
 					addNewChat
