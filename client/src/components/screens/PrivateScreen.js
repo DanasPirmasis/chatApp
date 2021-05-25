@@ -17,7 +17,7 @@ const PrivateScreen = ({ history }) => {
 	//input for search
 	const [inputUsername, setInputUsername] = useState('');
 	//usernames to display conversations
-	const [outputUsernames, setOutputUsernames] = useState(['']);
+	const [outputUsernames, setOutputUsernames] = useState([]);
 	const [findId, setfindId] = useState(['']);
 	const [addId, setAddId] = useState(['']);
 	//input data from sendMessagesHandler
@@ -79,11 +79,19 @@ const PrivateScreen = ({ history }) => {
 			console.log(data.data);
 		} catch (error) {
 			console.log(error);
-			setError(error.response.data.error);
+			//setError(error.response.data.error);
 		}
 	};
 
-	const newConversationHandler = async (e) => {
+	const loopthrough =(value) =>{
+		var arr =[]
+		value.map(i => {
+			arr.push(i.id)
+		})
+		return arr
+	}
+
+	const newConversationHandler = async (e, convIds) => {
 		e.preventDefault();
 
 		const config = {
@@ -93,11 +101,12 @@ const PrivateScreen = ({ history }) => {
 			},
 		};
 		console.log(config);
+		console.log(loopthrough(convIds))
 		try {
 			const { data } = await axios({
 				method: 'post',
 				url: '/api/private/newconversation',
-				data: { recipients:[localStorage.getItem('userID'), addId]
+				data: { recipients:[localStorage.getItem('userID'),...loopthrough(convIds)]
 			},
 				headers: config.header,
 			});
@@ -268,7 +277,6 @@ const PrivateScreen = ({ history }) => {
 				<div className="chatApp__top">
 					<button onClick={logoutHandler}>Logout</button>
 					<button onClick={fetchMessages}>Refresh</button>
-					<button onClick={newConversationHandler}>newConversationHandler</button>
 				</div>
 
 				<div className="chatApp__body">
@@ -280,6 +288,7 @@ const PrivateScreen = ({ history }) => {
 						usernameState={localStorage.getItem('username')}
 						findId={findId}
 						setAddId={setAddId}
+						newConversationHandler={newConversationHandler}
 					/>
 					<Chat
 						messageState={messageState}

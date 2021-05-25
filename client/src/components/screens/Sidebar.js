@@ -11,9 +11,10 @@ function Sidebar({
 	outputUsernames,
 	usernameState,
 	findId,
-	setAddId
+	setAddId,
+	newConversationHandler
 }) {
-	const [userSelect, setuserSelect] = useState({name:'', index:''});
+	const [userSelect, setuserSelect] = useState([{}]);
 
 	return (
 		<div className="sidebar">
@@ -35,6 +36,9 @@ function Sidebar({
 					outputUsernames={outputUsernames}
 					setuserSelect={setuserSelect}
 					userSelect={userSelect}
+					findId= {findId}
+					usernameState={usernameState}
+					newConversationHandler={newConversationHandler}
 				/>
 
 				<SidebarChat userSelect={userSelect} />
