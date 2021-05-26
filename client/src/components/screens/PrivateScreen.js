@@ -33,9 +33,9 @@ const PrivateScreen = ({ history }) => {
 	//reikes naudot po pakeitimu
 	//const [conversationID, setConversationID] = useState('');
 
-	socket.on('askForUserId', () => {
-		socket.emit('userIdReceived', localStorage.getItem('userID'));
-	});
+	// socket.on('askForUserId', () => {
+	// 	socket.emit('userIdReceived', localStorage.getItem('userID'));
+	// });
 
 	socket.on(
 		'messageReceived',
@@ -52,6 +52,7 @@ const PrivateScreen = ({ history }) => {
 		if (!localStorage.getItem('authToken')) {
 			history.push('/login');
 		}
+
 		if (error.includes('Unauthorized to access this route')) {
 			localStorage.removeItem('authToken');
 			localStorage.removeItem('username');
@@ -59,6 +60,8 @@ const PrivateScreen = ({ history }) => {
 			localStorage.removeItem('userID');
 			history.push('/login');
 		}
+
+		socket.emit('userIdReceived', localStorage.getItem('userID'));
 	}, [error, history]);
 	//user search should throw errors if there are missing inputs
 	const userSearchHandler = async (e) => {
