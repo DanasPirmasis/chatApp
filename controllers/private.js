@@ -15,6 +15,8 @@ const acceptedFileTypes = [
 	'text/html',
 	'text/javascript',
 	'audio/mpeg',
+	'audio/wav',
+	'audio/aac',
 	'video/mp4',
 	'application/pdf',
 	'application/vnd.ms-powerpoint',
@@ -144,6 +146,7 @@ exports.postMessage = async (req, res, next) => {
 				fromUsername: fromUsername,
 				file: file,
 				fileType: 'empty',
+				fileName: '-',
 				body: body,
 			});
 			res.status(200).json({

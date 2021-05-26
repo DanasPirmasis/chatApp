@@ -8,12 +8,13 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import React from 'react';
 import './Message.css';
 
-function Message({ message, username }) {
+function Message({ message, username, color }) {
 	const [edit, setEdit] = useState(false);
 	const [input, setInput] = useState('');
 	const [style, setStyle] = useState({ display: 'none' });
 	const isUser = username === message.username;
 	const imageFileTypes = ['image/png', 'image/jpeg', 'image/gif'];
+	const audioFileTypes = ['audio/mpeg', 'audio/wav', 'audio/aac'];
 
 	const textToDisplay = () => {
 		//console.log(message);
@@ -28,6 +29,12 @@ function Message({ message, username }) {
 			imageFileTypes.includes(message.fileType)
 		) {
 			return <img src={`${message.file}`} alt={''} />;
+		} else if (
+			(message.message === '' || message.message === undefined) &&
+			message.file !== undefined &&
+			audioFileTypes.includes(message.fileType)
+		) {
+			return <audio src={message.file} controls />;
 		} else if (
 			(message.message === '' || message.message === undefined) &&
 			message.file !== undefined
@@ -95,7 +102,11 @@ function Message({ message, username }) {
 	};
 
 	const addEditButtonOnHover = () => {
-		if (isUser) {
+		if (
+			isUser &&
+			message.file.length < 1 &&
+			!message.message.includes('giphy')
+		) {
 			return (
 				<div className='edit__message'>
 					<EditIcon
@@ -118,7 +129,10 @@ function Message({ message, username }) {
 
 	return (
 		<div className={`message ${isUser && 'message_user'}`}>
-			<Card className={isUser ? 'message__userCard' : 'message__guestCard'}>
+			<Card
+				className={isUser ? 'message__userCard' : 'message__guestCard'}
+				style={{ backgroundColor: color }}
+			>
 				<CardContent>
 					<Typography color="initial" varinat="h5" component="h2">
 						{edit ? (
