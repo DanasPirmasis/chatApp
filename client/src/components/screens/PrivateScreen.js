@@ -15,9 +15,11 @@ const socket = io('http://localhost:5000/', {
 const PrivateScreen = ({ history }) => {
 	const [error, setError] = useState('');
 	//input for search
-	const [inputUsername, setInputUsername] = useState();
+	const [inputUsername, setInputUsername] = useState('');
 	//usernames to display conversations
-	const [outputUsernames, setOutputUsernames] = useState(['']);
+	const [outputUsernames, setOutputUsernames] = useState([]);
+	const [findId, setfindId] = useState(['']);
+	const [addId, setAddId] = useState(['']);
 	//input data from sendMessagesHandler
 	const [messageState, setMessageState] = useState({
 		recipientID: '',
@@ -81,8 +83,42 @@ const PrivateScreen = ({ history }) => {
 				data: { inputUsername },
 				headers: config.header,
 			});
-			console.log(data);
-			setOutputUsernames(data.data);
+			setOutputUsernames(data.data.usernamesList);
+			setfindId(data.data.idList);
+			console.log(data.data);
+		} catch (error) {
+			console.log(error);
+			//setError(error.response.data.error);
+		}
+	};
+
+	const loopthrough =(value) =>{
+		var arr =[]
+		value.map(i => {
+			arr.push(i.id)
+		})
+		return arr
+	}
+
+	const newConversationHandler = async (e, convIds) => {
+		e.preventDefault();
+
+		const config = {
+			header: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+			},
+		};
+		console.log(config);
+		console.log(loopthrough(convIds))
+		try {
+			const { data } = await axios({
+				method: 'post',
+				url: '/api/private/newconversation',
+				data: { recipients:[localStorage.getItem('userID'),...loopthrough(convIds)]
+			},
+				headers: config.header,
+			});
 			console.log(data.data);
 		} catch (error) {
 			console.log(error);
@@ -123,7 +159,7 @@ const PrivateScreen = ({ history }) => {
 			const { data } = await axios({
 				method: 'post',
 				url: '/api/private/getusernames',
-				data: {}, //Cia turi atsirast conversationID is room name paspaudimo
+				data: {conversationID: localStorage.getItem('conversationIDS')}, //Cia turi atsirast conversationID is room name paspaudimo
 				headers: config.headers,
 			});
 			console.log(data.data);
@@ -265,8 +301,10 @@ const PrivateScreen = ({ history }) => {
 						setInputUsername={setInputUsername}
 						outputUsernames={outputUsernames}
 						usernameState={localStorage.getItem('username')}
+						findId={findId}
+						setAddId={setAddId}
+						newConversationHandler={newConversationHandler}
 					/>
-
 					<Chat
 						messageState={messageState}
 						usernameState={localStorage.getItem('username')}

@@ -4,6 +4,7 @@ import axios from 'axios';
 import EditIcon from '@material-ui/icons/Edit';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
+import DeleteIcon from '@material-ui/icons/Delete';
 import React from 'react';
 import './Message.css';
 
@@ -72,6 +73,14 @@ function Message({ message, username, color }) {
 		setEdit(false);
 	};
 
+	const deleteMessage =() =>{
+		console.log(message);
+		//setMessageState(messageState.filter(item => item.name !== name));
+		message.message="message has been deleted";
+		
+		
+	}
+
 	const updateMessage = async (messageID, editedText) => {
 		const config = {
 			headers: {
@@ -99,14 +108,24 @@ function Message({ message, username, color }) {
 			!message.message.includes('giphy')
 		) {
 			return (
-				<EditIcon
+				<div className='edit__message'>
+					<EditIcon
+						fontSize="small"
+						style={style}
+						onClick={() => openEditText()}
+					/>
+					
+					<DeleteIcon 
 					fontSize="small"
 					style={style}
-					onClick={() => openEditText()}
-				></EditIcon>
+					onClick={() => deleteMessage()}
+					/>
+					
+				</div>
 			);
 		}
 	};
+	
 
 	return (
 		<div className={`message ${isUser && 'message_user'}`}>
