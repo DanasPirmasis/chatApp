@@ -110,7 +110,7 @@ const PrivateScreen = ({ history }) => {
 			},
 		};
 		console.log(config);
-		console.log(loopthrough(convIds))
+		//console.log(loopthrough(convIds))
 		try {
 			const { data } = await axios({
 				method: 'post',
@@ -119,7 +119,16 @@ const PrivateScreen = ({ history }) => {
 			},
 				headers: config.header,
 			});
+
 			console.log(data.data);
+			console.log(data.data._id);
+			//getRecipients(data.data._id)
+			localStorage.setItem('conversationIDS',data.data._id);
+			fetchMessages();
+			getRecipients();
+			getConversationRecipientUsernames();
+
+			//history.push('/searchusers');
 		} catch (error) {
 			console.log(error);
 			setError(error.response.data.error);
@@ -137,10 +146,11 @@ const PrivateScreen = ({ history }) => {
 			const { data } = await axios({
 				method: 'post',
 				url: '/api/private/getrecipients',
-				data: {}, //Cia turi atsirast conversationID is room name paspaudimo
+				data: {conversationID: localStorage.getItem('conversationIDS')}, //Cia turi atsirast conversationID is room name paspaudimo
 				headers: config.headers,
 			});
 			setMessageState({ recipientID: data.data });
+			console.log(data.data);
 			console.log(messageState);
 		} catch (error) {
 			console.log(error);
@@ -148,7 +158,7 @@ const PrivateScreen = ({ history }) => {
 		}
 	};
 
-	const getConversationRecipientUsernames = async (e) => {
+	const getConversationRecipientUsernames = async () => {
 		const config = {
 			headers: {
 				'Content-Type': 'application/json',
@@ -216,7 +226,7 @@ const PrivateScreen = ({ history }) => {
 	const sendMessagesHandler = async (e) => {
 		e.preventDefault();
 		const { username, message, file, fileType, fileName } = messageState;
-		const recipientID = '607710a96b5ccc0ee4a70309';
+		const recipientID = '607710a96b5ccc0ee4a70309'; //
 
 		const config = {
 			header: {
@@ -292,6 +302,7 @@ const PrivateScreen = ({ history }) => {
 				<div className="chatApp__top">
 					<button onClick={logoutHandler}>Logout</button>
 					<button onClick={fetchMessages}>Refresh</button>
+					<button onClick={getRecipients}>getRecipients</button>
 				</div>
 
 				<div className="chatApp__body">
