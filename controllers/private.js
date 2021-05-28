@@ -15,6 +15,8 @@ const acceptedFileTypes = [
 	'text/html',
 	'text/javascript',
 	'audio/mpeg',
+	'audio/wav',
+	'audio/aac',
 	'video/mp4',
 	'application/pdf',
 	'application/vnd.ms-powerpoint',
@@ -52,10 +54,14 @@ exports.getUsers = async (req, res, next) => {
 		}
 
 		let usernamesList = user.map((a) => a.username);
+		let idList = user.map((a) =>a._id)
 
 		res.status(200).json({
 			success: true,
-			data: usernamesList,
+			data:{ 
+				usernamesList: usernamesList,
+				idList: idList
+			}
 		});
 	} catch (error) {
 		res.status(500).json({ success: false, error: error.message });
@@ -140,6 +146,7 @@ exports.postMessage = async (req, res, next) => {
 				fromUsername: fromUsername,
 				file: file,
 				fileType: 'empty',
+				fileName: '-',
 				body: body,
 			});
 			res.status(200).json({

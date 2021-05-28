@@ -18,6 +18,15 @@
     background-color:rgb(89, 103, 184);
 }
 
+.modalBox{
+    display: flex;
+}
+
+.userSelect__box{
+    display: column;
+    margin-right: 100px;
+}
+
 .sidebar__headerInfo{
     padding-left:  0px;
 }

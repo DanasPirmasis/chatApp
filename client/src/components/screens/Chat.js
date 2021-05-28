@@ -5,6 +5,7 @@ import Picker from 'emoji-picker-react';
 import Modal from 'react-modal';
 import Gif from './Gif';
 import uuid from 'react-uuid';
+import { ChromePicker } from 'react-color';
 import {
 	Button,
 	FormControl,
@@ -15,6 +16,9 @@ import {
 import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
 import GifIcon from '@material-ui/icons/Gif';
 import AttachmentIcon from '@material-ui/icons/Attachment';
+import MicIcon from '@material-ui/icons/Mic';
+import ColorLensIcon from '@material-ui/icons/ColorLens';
+import { ReactMediaRecorder } from 'react-media-recorder';
 import Message from './Message';
 
 function Chat({
@@ -28,10 +32,14 @@ function Chat({
 	messageState,
 	errorState,
 }) {
+	//open and close modals
 	const [emojiModalOpen, setEmojiModalOpen] = useState(false);
 	const [gifModalOpen, setGifModalOpen] = useState(false);
 	const [fileModalOpen, setFileModalOpen] = useState(false);
-	const [showGif, setShowGif] = useState(null);
+	const [recordingModalOpen, setRecordingModalOpen] = useState(false);
+	const [colorPiker, setColorPiker] = useState(false);
+
+	const [color, setColor] = useState('#5967b8');
 	const [search, setSearch] = useState('');
 
 	const [chosenEmoji, setChosenEmoji] = useState('');
@@ -47,6 +55,28 @@ function Chat({
 	const fileModalSendHandler = (e) => {
 		sendMessage(e);
 		setFileModalOpen(false);
+	};
+
+	const audioMessageHandler = async (mediaBlobUrl) => {
+		console.log(mediaBlobUrl);
+		let blob = await fetch(mediaBlobUrl).then((r) => r.blob());
+		if (blob.size > 16000000) {
+			errorState('Voice message is too long');
+			return;
+		}
+		const file = await toBase64(blob);
+
+		setMessageState({
+			username: usernameState,
+			file: file,
+			fileType: 'audio/wav',
+			fileName: 'Audio message',
+		});
+	};
+
+	const audioModalSendHandler = (e) => {
+		sendMessage(e);
+		setRecordingModalOpen(false);
 	};
 
 	const fileHandler = async (e) => {
@@ -65,7 +95,6 @@ function Chat({
 			fileType: e.target.files[0].type,
 			fileName: e.target.files[0].name,
 		});
-		console.log(messageState);
 	};
 
 	const toBase64 = async (file) =>
@@ -111,11 +140,58 @@ function Chat({
 							key={uuid()}
 							username={username}
 							message={message}
+							color={color}
 						></Message>
 					))}
+				{colorPiker && (
+					<div className="pickcolor">
+						<ChromePicker
+							color={color}
+							onChange={(updatedColor) => setColor(updatedColor.hex)}
+						/>
+					</div>
+				)}
+
+				{emojiModalOpen && (
+					<div className="emojipiker">
+						<Picker isOpen={emojiModalOpen} onEmojiClick={onEmojiClick} />
+					</div>
+				)}
 			</div>
 
 			<div className="chat__footer">
+				<MicIcon onClick={() => setRecordingModalOpen(true)} />
+				<Modal
+					isOpen={recordingModalOpen}
+					onRequestClose={() => setRecordingModalOpen(false)}
+				>
+					<ReactMediaRecorder
+						audio
+						render={({
+							status,
+							startRecording,
+							stopRecording,
+							mediaBlobUrl,
+						}) => (
+							<div>
+								<button onClick={startRecording}>Start Recording</button>
+								<button onClick={stopRecording}>Stop Recording</button>
+								<button
+									onClick={(e) => {
+										audioModalSendHandler(e);
+									}}
+								>
+									Send message
+								</button>
+								<audio src={mediaBlobUrl} controls />
+							</div>
+						)}
+						onStop={(mediaBlobUrl) => {
+							audioMessageHandler(mediaBlobUrl);
+						}}
+					/>
+				</Modal>
+
 				<AttachmentIcon onClick={() => setFileModalOpen(true)} />
 				<Modal
 					isOpen={fileModalOpen}
@@ -138,21 +214,15 @@ function Chat({
 				>
 					<Gif
 						setGifModalOpen={setGifModalOpen}
-						setShowGif={setShowGif}
 						setMessageState={setMessageState}
 						usernameState={usernameState}
 						messageState={messageState}
 					/>
 				</Modal>
+				<InsertEmoticonIcon
+					onClick={() => setEmojiModalOpen((emojiModalOpen) => !emojiModalOpen)}
+				/>
 
-				<InsertEmoticonIcon onClick={() => setEmojiModalOpen(true)} />
-				<Modal
-					size="sm"
-					isOpen={emojiModalOpen}
-					onRequestClose={() => setEmojiModalOpen(false)}
-				>
-					<Picker isOpen={emojiModalOpen} onEmojiClick={onEmojiClick} />
-				</Modal>
 				<form className="chat__footerForm">
 					<FormControl fullWidth>
 						<InputLabel>Enter a message</InputLabel>
@@ -172,6 +242,10 @@ function Chat({
 						</Button>
 					</FormControl>
 				</form>
+
+				<ColorLensIcon
+					onClick={() => setColorPiker((colorPiker) => !colorPiker)}
+				/>
 			</div>
 		</div>
 	);
