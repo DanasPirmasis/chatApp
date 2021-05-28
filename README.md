@@ -4,7 +4,7 @@ Reikalavimai pasileidimui:
   1. NodeJS
   2. IDE kuri palaiko JS (VSCode rekomenduojama)
 
-Pasileidimo instrukcija:
+Paleidimo instrukcija:
   1. Atidaryti projekta per VSCode
   2. Atidaryti VSCode terminalą
   3. Terminale įvesti komandą npm install
