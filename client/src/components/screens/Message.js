@@ -29,7 +29,10 @@ function Message({ message, username, color }) {
 			imageFileTypes.includes(message.fileType)
 		) {
 			return <img src={`${message.file}`} alt={''} />;
-		} else if (
+		} else if (message.message ==='message has been deleted') {
+			return message.message;
+		}
+		 else if (
 			(message.message === '' || message.message === undefined) &&
 			message.file !== undefined &&
 			audioFileTypes.includes(message.fileType)
@@ -77,6 +80,7 @@ function Message({ message, username, color }) {
 		console.log(message);
 		//setMessageState(messageState.filter(item => item.name !== name));
 		message.message="message has been deleted";
+		setStyle({ display: 'none' });
 		
 		
 	}
